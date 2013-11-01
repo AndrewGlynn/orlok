@@ -13,6 +13,7 @@ Setup
 -----
 
 You'll need to download libcinder from:
+
   http://libcinder.org/releases/cinder_0.8.4_mac.zip
 
 Extract into orlok/backend/cinder (this should create a cinder_0.8.4_mac
@@ -103,10 +104,10 @@ objects to the ``<app>`` instance via the ``on-event`` generic function.
 First, it will send zero or more ``<input-event>`` in response to user input.
 Next, it sends an ``<update-event>``. Finally, it will send a ``<render-event>``.
 
-Finally, a ``<shutdown-event>`` will be sent after the final game loop
-iteration.
+After the final game loop iteration completes, a ``<shutdown-event>`` will be
+sent.
 
-It is assumed that apps will perform essential game simulation in response to
+It is assumed that an app will perform essential game simulation in response to
 the ``<update-event>``, and will render itself in response to the
 ``<render-event>``.
 
@@ -114,13 +115,13 @@ the ``<update-event>``, and will render itself in response to the
 Audio
 .....
 
-Orlok currently provides limited audio functionality. A single <music>
-track can be played (with optional looping), and multiple <sound>s may be
-triggered. Only wav and mp3 formats seem to work at the moment (and not all
-variations of those formats, either).
+Orlok currently provides limited audio functionality. A single ``<music>``
+track can be played (with optional looping), and multiple ``<sound>`` instances
+may be triggered. Only wav and mp3 formats seem to work at the moment (and not
+all variations of those formats, either).
 
 Master volume and music volume may be modified independently, but there is
-presently no control over the volume of individual <sound> instances (nor
+presently no control over the volume of individual ``<sound>`` instances (nor
 control for pan, frequency changes, etc).
 
 Bitmaps and Textures
@@ -227,7 +228,7 @@ ideas for a name?]
     * ``<box>`` - Displays a colored rectangle before rendering children.
 
   * ``<image>`` - Displays an image (created from a ``<texture>``,
-    ``<bitmap>``, or image file.
+    ``<bitmap>``, or image file).
 
   * ``<text-field>`` - Display a line of text.
 
