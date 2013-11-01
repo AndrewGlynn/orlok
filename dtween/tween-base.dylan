@@ -1,6 +1,6 @@
 module: tween-base
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 define class <tween-base> (<tween>)
   slot local-duration :: <single-float>       = 1.0, init-keyword: duration:;

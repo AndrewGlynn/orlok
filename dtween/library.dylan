@@ -1,6 +1,6 @@
 module: dylan-user
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 define library dtween
   use common-dylan;

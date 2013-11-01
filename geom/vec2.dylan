@@ -1,6 +1,6 @@
 module: vec2
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 // The x and y components are named vx and vy since using just x and y
 // would be error prone given Dylan's flat namespace, and using a longer name

@@ -1,6 +1,6 @@
 module: alignment
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 // 2D alignment (horizontal and vertical).
 define class <alignment> (<object>)

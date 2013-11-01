@@ -1,6 +1,6 @@
 module: tween
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 define abstract class <tween> (<object>)
 end;

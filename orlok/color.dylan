@@ -1,6 +1,6 @@
 module: color
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 // These are defined as open so other classes can use them directly, without
 // needing to embed a <color>.

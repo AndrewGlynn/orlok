@@ -1,6 +1,6 @@
 module: macros
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 
 define macro tween-to

@@ -1,4 +1,6 @@
 module: simple-app
+author: Andrew Glynn
+copyright: See LICENSE file in this distribution.
 
 // Define our concrete <app> subclass. For this simple example we have no
 // need to define any slots for the class.

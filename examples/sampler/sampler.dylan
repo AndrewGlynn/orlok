@@ -1,6 +1,6 @@
 module: sampler 
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 //  Samples to do:
 //   - More/better tween examples (tween alpha, multi-tweens, etc.)

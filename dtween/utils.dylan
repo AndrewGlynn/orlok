@@ -1,6 +1,6 @@
 module: utils
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 // A more optimizable version of:
 //    reduce(reduce-fn, init, map(map-fn, seq))

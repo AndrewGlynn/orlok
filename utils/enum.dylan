@@ -1,6 +1,6 @@
 module: utils
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 // Base class for all enum values.
 define open abstract class <enum> (<object>)

@@ -1,6 +1,6 @@
 module: full-screen-effects-implementation
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 
 define abstract class <full-screen-effect> (<disposable>)

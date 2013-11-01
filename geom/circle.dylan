@@ -1,6 +1,6 @@
 module: circle
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 define class <circle> (<object>)
   slot vx     :: <single-float> = 0.0, init-keyword: x:;

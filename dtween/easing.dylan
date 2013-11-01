@@ -1,6 +1,6 @@
 module: easing
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 // Some standard easing functions.
 // Note that all of these expect a normalized t between 0 and 1 inclusive.

@@ -2,7 +2,7 @@ module: tween-group
 synopsis: A <tween-group> manages a set of tweens, updating them and removing
           them when they expire.
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 define class <tween-group> (<object>)
   slot tweens :: limited(<stretchy-vector>, of: <tween>)

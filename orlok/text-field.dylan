@@ -1,6 +1,6 @@
 module: visual
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 define class <text-field> (<visual>)
   slot text-string    :: <string> = "", init-keyword: text:;

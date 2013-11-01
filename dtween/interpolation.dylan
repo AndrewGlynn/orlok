@@ -3,7 +3,7 @@ synopsis: A set of functions for linearly interpolating values of various types.
           To achieve non-linear interpolation, feed a t value into an easing
           function first, then pass the result onto interpolate.
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 // t is between 0.0 and 1.0 inclusive
 // It is assumed that initial, final, and result have the same type.

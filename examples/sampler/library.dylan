@@ -1,4 +1,6 @@
 module: dylan-user
+author: Andrew Glynn
+copyright: See LICENSE file in this distribution.
 
 define library sampler
   use common-dylan;

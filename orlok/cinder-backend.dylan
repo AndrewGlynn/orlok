@@ -1,6 +1,6 @@
 module: cinder-backend
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 // Implementation of orlok using libcinder.
 

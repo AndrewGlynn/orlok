@@ -1,6 +1,6 @@
 module: rect
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 // These concepts are so widely applicable that we leave the generics
 // wide open.

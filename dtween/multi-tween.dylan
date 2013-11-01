@@ -1,7 +1,7 @@
 module: multi-tween
 synopsis: <multi-tween> is a tween containing multiple sub-tweens.
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 
 define class <elem> (<object>)

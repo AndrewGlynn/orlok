@@ -1,6 +1,6 @@
 module: spatial-2d
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 
 // Simple base class for objects with a 2D spatial transform.

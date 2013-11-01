@@ -1,6 +1,6 @@
 module: transform2
 author: Andrew Glynn
-copyright: copyright: See LICENSE file in this distribution.
+copyright: See LICENSE file in this distribution.
 
 // We represent the 3x3 homogeneous matrix like this (also includes an example
 // of multiplying a vector by the matrix):
