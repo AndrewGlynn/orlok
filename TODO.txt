@@ -1,0 +1,237 @@
+- Add README.rst file for project.
+
+- Attempting to subclass <visual> or one of its subclasses outside of the
+  orlok library itself causes an internal compiler error:
+     Internal error: #f is not of type {<class>: <module-binding>}
+  This means that <visual> is not extensible, which ruins the entire point.
+  Note that <visual> _is_ declared open in orlok, and is exported.
+  Attempts to come up with a minimal repro case for this have failed so far.
+
+- Come up with different name than "orlok", and rename everything
+  accordingly.
+
+- Clean up cinder_backend.cpp. Make more consistent. Right now some things
+  are methods of the App class, others are just C functions. Make everything
+  a C function, and make members of the App public as necessary to support
+  this. Try to be more consistent with naming and other style issues.
+
+- Upgrade to latest (release) libcinder.
+
+- Style: Some library types can only be created via special constructor
+  functions (eg, create-bitmap, load-sound, etc), while others can be
+  created by the standard 'make' function. Is this ok, or should I try to
+  standardize on one or the other? Can't really drop make, though, right?
+
+- Think up a better name than 'visual' for the flash-like API.
+
+- Currently transform-2d and transform-2d-setter both perform allocations
+  (ie, copying the slot for the getter, and copying the input for the setter).
+  This is inefficient, and is really just to work with the way the
+  with-saved-state macro currently is defined. We should support custom
+  save/restore functions with that macro, and then we could just use a
+  <transform-stack> class instead. Not sure exactly how this will work out.
+
+- But...this technique also should make it easy to know when the renderer's
+  internal transform has actually been modified! When transform-2d-setter is
+  called, we mark the transform as dirty (or if translate!, rotate!, or
+  scale! is called directly on the renderer itself). This might optimize
+  rendering a bit.
+
+- Figure out rules for generic vs method keyword default arguments: Do we need
+  to repeat them in the methods if they are defined in the generic? Can methods
+  override defaults of the generics? Change signatures to avoid duplication when
+  possible (in particular, the former situation arises a lot in this code).
+
+- Move color module into utils?
+
+- Move with-saved-state into utils?
+
+- Figure out why <c-string*> output parameters don't seem to print properly
+  (prints "{<instantiation-of-c-string> 0x5098f20}" instead of the actual
+  string value). To test, call load-shader-program on a non-existent file.
+  Update: Using as(<byte-string>, error-msg) seems to make it work. It appears
+  that the error-msg is a subclass of <string>, so as(<string>, error-msg)
+  doesn't do anything - we have to cast it to a different thing. I would think
+  this would either happen automatically (as a mapped type thingy) or at least
+  an appropriate method on print-object or whatever it is called should be
+  supplied so that it works properly with formatting functions.
+
+- BUG: When making test rect really large using cairo, we get a segfault in
+     pixman_image_composite32
+     _clip_and_composite_boxes
+
+- Maybe use limited integer types to enforce constraints on sizes for various
+  types. Eg, limited(<integer>, min: 1). But with a nice name. Use for:
+     * app-width/app-height
+     * window-width/window-height
+     * bitmap dimensions
+     * texture dimensions
+     * framebuffer dimensions
+     * more?
+
+- Optimize how/when we need to update the OpenGL transform. Right now we
+  do this for every rendered primitive: push matrix, multiply matrix, 
+  render primitive, pop matrix. We should only do all the matrix stuff
+  when actually necessary. Also, might want to move more of the matrix
+  stuff into Dylan (right now there's a strange mix between Dylan and
+  cinder).
+
+- Once the above is done, I should really look at handling all transform
+  stuff on the Dylan side ("modelview", projection, etc), and then handle
+  it all manually via vertex shader uniform(s), rather than using the old
+  deprecated OpenGL stuff.
+
+- Optimize setting of shader uniforms by keeping track of when they change.
+  Only need to actually set uniforms (eg glUniform???) first time they're
+  set or when they change (not once per frame, as now). A table mapping
+  uniform names to dirty flags in each shader program should suffice.
+
+********* DONE **********
+
++ Improve sound support. Implement proper disposal of sound resources.
+  Also implement more like other resource types (don't use weird map in the
+  App class, etc.)
+  Support update of playing sounds (at least volume).
+  Later, fancier effects on sounds.
+
++ The 'app-title' keyword for <app> doesn't seem to do anything. Make it work
+  or remove it. [REMOVED]
+
++ Rename all "vg" functions in the backend (dylan and c++) to have the
+  "cinder_vg_" prefix (ie, add the "vg_" where necessary). Remove related
+  TODO comments when done.
+
++ Why is y-axis inverted in OpenGL? It has y=0 at the top of the screen.
+  I think it might do this by default? Need to scale and translate, and then
+  redo that for every resize event.[Note: Cinder does this by default, but the
+  I've switched to y=0 at the top anyway, so this issue is moot.]
+
++ Implement fullscreen. Should allow fullscreen on startup, or toggling
+  between while running. Also, it appears that cinder (at least on mac)
+  can change the app's resolution when going to fullscreen. What I mean is,
+  going from an 800x600 window to fullscree you will see your original 800x600
+  content in the upper left 800x600 of the screen (the screen is still it seems
+  at full desktop resolution). I probably need to detect resize events, or
+  something, and handle them. Then the question is, do I just stretch the
+  gl viewport to match the actual resolution, allowing code to run unchanged,
+  but ignoring the chance for better resolution, or do I force the program
+  to handle the resize event? Maybe provide both options somehow. At least
+  our "basic" app should have separate logical/physical dimension, so we can
+  handle it transparently. In addition to resize event, will need a
+  <fullscreen-event> or similar. See what cinder actually sends.
+
++ More <bitmap> functionality. Using the "ip" cinder namespace, implement:
+    premultiply(<bitmap>) // useful for <bitmap> paint (cairo wants premult)
+    unpremultiply(<bitmap>) // ditto
+    flip-vertical(<bitmap>) // useful since cairo wants flipped coords?
+    clear(<bitmap>, <color>, <rect>)
+  Maybe also support:
+    grayscale(<bitmap>) => (new-bitmap)
+  Move most bitmap functionality out of orlok-core and into a bitmap
+  module. Maybe move it all out?
+
+
++ Switch to OpenGL for the backend renderer, but keep using cairo for the
+  initial surface. Create a texture from the cairo surface and blit that to
+  OpenGL (note - we can invert the y-axis in opengl potentially, to save some
+  work). Need to update texture each frame - see how this affects performance.
+
++ If that works, update the <vg-renderer> to use explicit <bitmap> render
+  targets. We could still allow <vg-renderer> as the screen renderer if we
+  want, but it would be implemented using a <bitmap> render target and then
+  render via OpenGL, as above.
+
++ (Instead of/in addition to the above.) Create a new <vg-context> class that
+  has a target-bitmap slot of type <bitmap>. This new class contains all the
+  transform stack and similar stuff that is currently in <vg-renderer>. Now
+  the basic vg API works on <vg-context> rather than <vg-renderer> (eg,
+  draw-shape, draw-text, etc). If the user wants to render vg stuff to a
+  bitmap, they can just create a new <vg-context> for their bitmap and do so.
+  Now, <vg-renderer> either inherits from or contains a <vg-context> as a
+  component. The <vg-renderer> is now only used when the user wants the app
+  as a whole to use vg rendering (ie, specifying <vg-renderer> as the renderer
+  type in the creation of the app; one can no longer create one on its own).
+  The cinder backend will keep a single cairo::Context (plus backing surface)
+  for use if the client specifies a <vg-renderer>.
+
++ Create <gl-renderer> class. Initial version might just support basic shapes
+  (rect, circle, path, etc) and billboards (just a special case of rect?).
+  Textures are created from <bitmap>s.
+
++ Framebuffer textures are flipped vertically. This is because when rendering
+  we already flip vertically to get the y-axis in the direction we want for
+  standard 2D stuff. When we render to a framebuffer we save out that
+  flipped version, and if we then render the framebuffer texture, it gets
+  flipped again (because we flip vertically when rendering, as mentioned
+  above). [Fixed, at least in part, by flipping vertical texture coordinates.
+  Might need a more general solution when adding more drawing functions.]
+
++ Add in new alignment stuff (see google docs notes). This includes moving
+  alignment code into geom (rect).
+
++ Add keyword arguments to gl-draw. Can differ based on shape we are drawing.
+  Eg, add "texture" arg to rect drawing. Maybe add "shader" arg, too.
+  While we're at it, can we just rename <shader-program> to <shader>? We'll
+  just assume "shader" means "vertex+fragment shader".
+
++ Switch to (0,0) at top-left, with y increasing downwards? This is mainly
+  me giving up, since Cinder natively wants everything to do this (cairo,
+  font rendering in OpenGL, etc), but also isn't this the way every 2D
+  game engine works anyway? I should probably just do it.
+
++ Implement alternate render-targets for <gl-renderer> (i.e., frame buffer
+  objects). Use this for render-to-texture (and thence to <bitmap>), and
+  full-screen effects, initially.
+
++ Add support for custom shaders. Maybe support full-screen effects
+  separate from smaller-scale effects if that seems useful or convenient.
+
++ Upgrade to latest (release) OpenDylan.
+
++ Improve build process. build-bundle.sh should at least be split into two
+  different scripts: one to copy in libs from orlok (to be when a project
+  is first created, and after any changes to the orlok backend), and one
+  that copies the final build products into the bundle.
+
++ Make align-visual work, if possible. Need to think about exactly what this
+  is supposed to do. And then, actually do it! There are various caveats
+  about both visuals sharing a common ancestor so they have comparable
+  coordinate spaces, etc.
+
++ Use melange for the cinder backend. This means splitting out the
+  necessary files into a header, and running melange on that. Should be
+  quite straightforward, since I only use standard c types.
+
++ Need a version of bounding-rect for <visual>s that takes another <visual>
+  as the target coordinate space. In other words, get the bounding-rect of
+  A from the point of view (coordinate space) of B. What to call it?
+  relative-bounding-rect(A, B) - need to remember argument order
+
++ Similarly, need a version of the 'align' function on <visual>s that works
+  properly given that the objects have their own coordinate spaces. Something
+  like:
+     align-visual(A, $center, B, $center)
+  or perhaps:
+     align-visual(A, $center, B, any-point-in-B-space)
+  The latter is more flexible, but will lead to more verbose constructs
+  like:
+     align-visual(A, $center, B, B.bounding-rect.center)
+  Maybe we just use the first option, but we can always do this for
+  more complicated stuff:
+     align($center, of: A, to: relative-bounding-rect(B, A)
+
++ Fonts don't quite fit their bounding rects, at least in the OpenGL version.
+  Figure out why (might need to start using TextureFonts - right now I'm
+  getting metrics from Cairo but rendering via cinder::gl::drawString).
+
++ Make sure font rendering, alignment, and extents work for both OpenGL and
+  Cairo (<vg-context>) versions.
+
++ Get rid of my worthless logging module in orlok-utils. Use common-dylan's
+  logging library if necessary.
+
++ Better yet would be to find some way to avoid these custom scripts and
+  have the lid file handle more of it? Or maybe at least do a Makefile
+  instead?
+
+
