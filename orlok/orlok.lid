@@ -12,6 +12,7 @@ files:        library
               image
               text-field
               visual-app
+              standard-effects
 c-object-files: libcinder.a
                 orlok_cinder_backend.a
 c-libraries:  orlok_cinder_backend.a

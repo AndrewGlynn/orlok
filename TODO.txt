@@ -1,14 +1,9 @@
-- Add README.rst file for project.
-
 - Attempting to subclass <visual> or one of its subclasses outside of the
   orlok library itself causes an internal compiler error:
      Internal error: #f is not of type {<class>: <module-binding>}
   This means that <visual> is not extensible, which ruins the entire point.
   Note that <visual> _is_ declared open in orlok, and is exported.
   Attempts to come up with a minimal repro case for this have failed so far.
-
-- Come up with different name than "orlok", and rename everything
-  accordingly.
 
 - Clean up cinder_backend.cpp. Make more consistent. Right now some things
   are methods of the App class, others are just C functions. Make everything
@@ -87,6 +82,8 @@
   uniform names to dirty flags in each shader program should suffice.
 
 ********* DONE **********
+
++ Add README.rst file for project.
 
 + Improve sound support. Implement proper disposal of sound resources.
   Also implement more like other resource types (don't use weird map in the

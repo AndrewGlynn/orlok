@@ -458,24 +458,19 @@ end module;
 define module full-screen-effects
   use common-dylan;
   use geom2;
+  use color;
   use orlok-core;
 
-  create
+  export
     <full-screen-effect>,
     install-effect,
     uninstall-effect,
     begin-effect,
     end-effect;
-end;
 
-// TODO: If there is nothing extra to export from this (e.g., for implementors)
-//       remove this module.
-define module full-screen-effects-implementation
-  use common-dylan;
-  use geom2;
-  use color;
-  use orlok-core;
-  use full-screen-effects, export: all;
+  // standard effects
+  export
+    <full-screen-glow-effect>;
 end;
 
 define module vector-graphics
@@ -569,8 +564,8 @@ define module cinder-backend
   use utils;
   use color;
   use orlok-core;
+  use full-screen-effects;
   use vector-graphics-implementation;
-  use full-screen-effects-implementation;
   use c-ffi;
 end module;
 
@@ -604,7 +599,6 @@ define module visual
   use color, export: { alpha, alpha-setter };
   use spatial-2d, export: all;
   use orlok-core;
-  use full-screen-effects;
 
   export
     <mouse-in-event>,
@@ -703,8 +697,6 @@ define module visual
     fonts,
     background-color, background-color-setter,
     register-font,
-    unregister-font,
-    
-    <full-screen-glow-effect>;
+    unregister-font;
 end;
 

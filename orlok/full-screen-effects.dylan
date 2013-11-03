@@ -1,4 +1,4 @@
-module: full-screen-effects-implementation
+module: full-screen-effects
 author: Andrew Glynn
 copyright: See LICENSE file in this distribution.
 
