@@ -316,6 +316,11 @@ void cinder_gl_set_matrices_window(int width, int height)
     gl::setMatricesWindow(width, height);
 }
 
+void cinder_gl_set_color(float r, float g, float b, float a)
+{
+    glColor4f(r, g, b, a);
+}
+
 void cinder_gl_set_blend(int mode)
 {
     switch (mode)
@@ -450,8 +455,6 @@ void cinder_gl_draw_rect(float x1, float y1, float x2, float y2,
     verts[3*2+0] = x1; texCoords[3*2+0] = u1;
     verts[3*2+1] = y2; texCoords[3*2+1] = v2;
 
-    //glColor3f(1.0f, 0.0f, 0.0f);
-
     glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 
     glDisableClientState( GL_VERTEX_ARRAY );
@@ -469,9 +472,7 @@ void cinder_gl_draw_text(char* text, float r, float g, float b, float a,
     //gl::drawString(text, Vec2f(x, y), ColorA(r, g, b, a), *static_cast<FontT*>(fontPtr)->font);
 }
 
-void cinder_gl_draw_line(float x1, float y1, float x2, float y2,
-                         float r, float g, float b, float a,
-                         float width)
+void cinder_gl_draw_line(float x1, float y1, float x2, float y2, float width)
 {
     static float lineWidth = -1.0f;
 
@@ -480,10 +481,7 @@ void cinder_gl_draw_line(float x1, float y1, float x2, float y2,
         glLineWidth(width);
     }
 
-    // TODO: add color stack?
-    glColor4f(r, g, b, a);
     gl::drawLine(Vec2f(x1, y1), Vec2f(x2, y2));
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void* cinder_gl_load_shader_program(char* vertShader, char* fragShader,

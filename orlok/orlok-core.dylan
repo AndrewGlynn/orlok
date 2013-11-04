@@ -657,6 +657,7 @@ define class <renderer> (<object>)
   virtual slot logical-size       :: <vec2>; // TODO: better name???
   virtual slot viewport           :: <rect>;
   virtual slot blend-mode         :: <blend-mode>;
+  virtual slot render-color       :: <color>; // TODO: better name?
 end;
 
 // The type of "paint" is determined by subclasses.

@@ -854,6 +854,7 @@ define class <cinder-gl-renderer> (<renderer>)
                                            left: 0, top: 0,
                                            width: 0, height: 0);
   slot %blend-mode        :: <blend-mode> = $blend-normal;
+  slot %render-color      :: <color> = $white;
 end;
 
 define function begin-draw (app :: <app>, ren :: <cinder-gl-renderer>) => ()
@@ -1043,6 +1044,21 @@ define sealed method blend-mode-setter (new-blend :: <blend-mode>,
   new-blend
 end;
 
+define sealed method render-color (ren :: <cinder-gl-renderer>)
+ => (color :: <color>)
+  ren.%render-color
+end;
+
+define sealed method render-color-setter (new :: <color>,
+                                          ren :: <cinder-gl-renderer>)
+ => (new :: <color>)
+  if (new ~= ren.render-color)
+    ren.%render-color := new;
+    cinder-gl-set-color(new.red, new.green, new.blue, new.alpha);
+  end;
+  new
+end;
+
 //---------------------------------------------------------------------------
 // Other functions on <renderer>
 //---------------------------------------------------------------------------
@@ -1219,9 +1235,10 @@ define method draw-line (ren :: <cinder-gl-renderer>,
                          width :: <single-float>) => ()
   cinder-gl-push-modelview-matrix();
   update-renderer-transform(ren);
-  cinder-gl-draw-line(from.vx, from.vy, to.vx, to.vy,
-                      color.red, color.green, color.blue, color.alpha,
-                      width);
+  let saved-color = ren.render-color;
+  ren.render-color := color;
+  cinder-gl-draw-line(from.vx, from.vy, to.vx, to.vy, width);
+  ren.render-color := saved-color;
   cinder-gl-pop-modelview-matrix();
 end;
 

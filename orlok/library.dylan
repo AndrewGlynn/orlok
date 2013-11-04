@@ -254,6 +254,7 @@ define module orlok-core
     viewport, viewport-setter,
     logical-size, logical-size-setter,
     blend-mode, blend-mode-setter,
+    render-color, render-color-setter,
 
     clear,
     draw-rect,

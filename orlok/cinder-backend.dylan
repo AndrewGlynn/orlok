@@ -854,6 +854,7 @@ define class <cinder-gl-renderer> (<renderer>)
                                            left: 0, top: 0,
                                            width: 0, height: 0);
   slot %blend-mode        :: <blend-mode> = $blend-normal;
+  slot %render-color      :: <color> = $white;
 end;
 
 define function begin-draw (app :: <app>, ren :: <cinder-gl-renderer>) => ()
@@ -1043,6 +1044,21 @@ define sealed method blend-mode-setter (new-blend :: <blend-mode>,
   new-blend
 end;
 
+define sealed method render-color (ren :: <cinder-gl-renderer>)
+ => (color :: <color>)
+  ren.%render-color
+end;
+
+define sealed method render-color-setter (new :: <color>,
+                                          ren :: <cinder-gl-renderer>)
+ => (new :: <color>)
+  if (new ~= ren.render-color)
+    ren.%render-color := new;
+    cinder-gl-set-color(new.red, new.green, new.blue, new.alpha);
+  end;
+  new
+end;
+
 //---------------------------------------------------------------------------
 // Other functions on <renderer>
 //---------------------------------------------------------------------------
@@ -1219,9 +1235,10 @@ define method draw-line (ren :: <cinder-gl-renderer>,
                          width :: <single-float>) => ()
   cinder-gl-push-modelview-matrix();
   update-renderer-transform(ren);
-  cinder-gl-draw-line(from.vx, from.vy, to.vx, to.vy,
-                      color.red, color.green, color.blue, color.alpha,
-                      width);
+  let saved-color = ren.render-color;
+  ren.render-color := color;
+  cinder-gl-draw-line(from.vx, from.vy, to.vx, to.vy, width);
+  ren.render-color := saved-color;
   cinder-gl-pop-modelview-matrix();
 end;
 
@@ -1692,6 +1709,14 @@ define C-function cinder-gl-set-matrices-window
   c-name: "cinder_gl_set_matrices_window";
 end;
 
+define C-function cinder-gl-set-color
+  input parameter r_ :: <C-float>;
+  input parameter g_ :: <C-float>;
+  input parameter b_ :: <C-float>;
+  input parameter a_ :: <C-float>;
+  c-name: "cinder_gl_set_color";
+end;
+
 define C-function cinder-gl-set-blend
   input parameter mode_ :: <C-signed-int>;
   c-name: "cinder_gl_set_blend";
@@ -1795,10 +1820,6 @@ define C-function cinder-gl-draw-line
   input parameter y1_ :: <C-float>;
   input parameter x2_ :: <C-float>;
   input parameter y2_ :: <C-float>;
-  input parameter r_ :: <C-float>;
-  input parameter g_ :: <C-float>;
-  input parameter b_ :: <C-float>;
-  input parameter a_ :: <C-float>;
   input parameter width_ :: <C-float>;
   c-name: "cinder_gl_draw_line";
 end;

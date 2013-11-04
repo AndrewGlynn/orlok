@@ -58,6 +58,7 @@ void* cinder_surface_resize(void* ptr, int width, int height, int filter);
 
 void cinder_gl_set_viewport(int x, int y, int width, int height);
 void cinder_gl_set_matrices_window(int width, int height);
+void cinder_gl_set_color(float r, float g, float b, float a);
 void cinder_gl_set_blend(int mode);
 
 void* cinder_gl_create_texture(int width, int height);
@@ -77,9 +78,7 @@ void cinder_gl_draw_rect(float x1, float y1, float x2, float y2,
                          float u1, float v1, float u2, float v2);
 void cinder_gl_draw_text(char* text, float r, float g, float b, float a,
                          float x, float y, void* fontPtr);
-void cinder_gl_draw_line(float x1, float y1, float x2, float y2,
-                         float r, float g, float b, float a,
-                         float width);
+void cinder_gl_draw_line(float x1, float y1, float x2, float y2, float width);
 void* cinder_gl_load_shader_program(char* vertShader, char* fragShader,
                                     const char** outErrorMsg);
 void* cinder_gl_create_shader_program(char* vertShaderSource, char* fragShaderSource,
