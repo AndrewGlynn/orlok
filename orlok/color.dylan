@@ -55,6 +55,14 @@ end;
 
 define sealed domain make (singleton(<color>));
 
+define sealed method \= (c1 :: <color>, c2 :: <color>)
+ => (equal? :: <boolean>)
+  c1.%r == c2.%r &
+  c1.%g == c2.%g &
+  c1.%b == c2.%b &
+  c1.%a == c2.%a
+end;
+
 // Create a new <color> with the given RGB values.
 // Alpha defaults to 1.
 define function make-rgb (r :: <single-float>,
