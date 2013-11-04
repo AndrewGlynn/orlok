@@ -1472,8 +1472,8 @@ define method load-sound (resource-name :: <string>) => (snd :: <cinder-sound>)
   make(<cinder-sound>, resource-name: resource-name, sound-ptr: ptr)
 end;
 
-define method play-sound (snd :: <cinder-sound>) => ()
-  cinder-audio-play-sound(snd.sound-ptr);
+define method play-sound (snd :: <cinder-sound>, #key volume = 1.0) => ()
+  cinder-audio-play-sound(snd.sound-ptr, as(<single-float>, volume));
 end;
 
 define class <cinder-music> (<music>)

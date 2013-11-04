@@ -377,18 +377,18 @@ define generic set-master-volume (volume :: <single-float>) => ();
 
 // A sound that can be played.
 define abstract class <sound> (<resource>)
-end class;
+end;
 
 // Load a new <sound>. Signals an error if no such resource is found.
 define generic load-sound (resource-name :: <string>) => (snd :: <sound>);
 
 // Begin playing a (new) instance of a <sound>.
-define generic play-sound (snd :: <sound>) => ();
+define generic play-sound (snd :: <sound>, #key volume = 1.0) => ();
 
 // A music track.
 define abstract class <music> (<resource>)
   virtual slot volume :: <single-float>;
-end class;
+end;
 
 // Load a new <music>. Signals an error if no such resource is found.
 define generic load-music (resource-name :: <string>) => (mus :: <music>);

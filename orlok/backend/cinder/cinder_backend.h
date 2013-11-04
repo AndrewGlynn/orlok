@@ -32,7 +32,7 @@ float cinder_audio_get_master_volume();
 void cinder_audio_set_master_volume(float v);
 void* cinder_audio_load_sound(const char* resourceName);
 void cinder_audio_free_sound(void* soundPtr);
-void cinder_audio_play_sound(void* soundPtr);
+void cinder_audio_play_sound(void* soundPtr, float volume);
 void* cinder_audio_load_music(const char* resourceName);
 void cinder_audio_free_music(void* musicPtr);
 void cinder_audio_play_music(void* musicPtr, BOOL loop, BOOL restart);

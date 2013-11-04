@@ -141,10 +141,12 @@ void cinder_audio_free_sound(void* soundPtr)
     delete static_cast<audio::SourceRef*>(soundPtr);
 }
 
-void cinder_audio_play_sound(void* soundPtr)
+void cinder_audio_play_sound(void* soundPtr, float volume)
 {
     audio::SourceRef* src = static_cast<audio::SourceRef*>(soundPtr);
-    audio::Output::play(*src);
+    audio::TrackRef track = audio::Output::addTrack(*src);
+    track->play();
+    track->setVolume(volume);
 }
 
 void* cinder_audio_load_music(const char* resourceName)
