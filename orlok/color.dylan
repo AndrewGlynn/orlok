@@ -53,16 +53,6 @@ define class <color> (<object>)
   constant slot %a :: <single-float> = 1.0, init-keyword: alpha:;
 end;
 
-define sealed domain make (singleton(<color>));
-
-define sealed method \= (c1 :: <color>, c2 :: <color>)
- => (equal? :: <boolean>)
-  c1.%r == c2.%r &
-  c1.%g == c2.%g &
-  c1.%b == c2.%b &
-  c1.%a == c2.%a
-end;
-
 // Create a new <color> with the given RGB values.
 // Alpha defaults to 1.
 define function make-rgb (r :: <single-float>,
@@ -105,6 +95,18 @@ define inline function hex-color (c :: <integer>) => (color :: <color>)
     let g = ash(logand(#x00ff00, c), -8) / 255.0;
     let b = logand(#x0000ff, c) / 255.0;
     make-rgb(r, g, b)
+end;
+
+define sealed method \= (c1 :: <color>, c2 :: <color>)
+ => (equal? :: <boolean>)
+  c1.%r == c2.%r &
+  c1.%g == c2.%g &
+  c1.%b == c2.%b &
+  c1.%a == c2.%a
+end;
+
+define sealed method shallow-copy (c :: <color>) => (copy :: <color>)
+  make-rgba(c.red, c.green, c.blue, c.alpha)
 end;
 
 // Convenience to make a differential copy of a <color>.
@@ -154,7 +156,6 @@ define sealed method make (type == <color>,
               blue:  clamp(b, 0.0, 1.0),
               alpha: clamp(a, 0.0, 1.0))
 end;
-
 
 define sealed inline method red (c :: <color>) => (r :: <single-float>)
   c.%r
@@ -262,6 +263,30 @@ end;
 define function darker (c :: <color>, #key amount :: <single-float> = .25)
  => (dark :: <color>)
   brighter(c, amount: -amount)
+end;
+
+define sealed method \* (c1 :: <color>, c2 :: <color>)
+ => (product :: <color>)
+  make-rgba(c1.red   * c2.red,
+            c1.green * c2.green,
+            c1.blue  * c2.blue,
+            c1.alpha * c2.alpha)
+end;
+
+define sealed method \+ (c1 :: <color>, c2 :: <color>)
+ => (sum :: <color>)
+  make-rgba(c1.red   + c2.red,
+            c1.green + c2.green,
+            c1.blue  + c2.blue,
+            c1.alpha + c2.alpha)
+end;
+
+define sealed method \- (c1 :: <color>, c2 :: <color>)
+ => (difference :: <color>)
+  make-rgba(c1.red   - c2.red,
+            c1.green - c2.green,
+            c1.blue  - c2.blue,
+            c1.alpha - c2.alpha)
 end;
 
 // Define a few constant colors for convenience.

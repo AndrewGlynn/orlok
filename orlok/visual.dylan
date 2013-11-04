@@ -389,10 +389,13 @@ define method on-event (e :: <render-event>,
 
   for (child in g.child-visuals.rep)
     if (should-render?(child))
-      // TODO: handle alpha, etc?
-      with-saved-state (e.renderer.transform-2d)
+      with-saved-state (e.renderer.transform-2d, e.renderer.render-color)
         unless (has-identity-transform?(child))
           e.renderer.transform-2d := child.transform-2d * e.renderer.transform-2d;
+        end;
+        if (child.alpha < 1.0)
+          e.renderer.render-color :=
+            e.renderer.render-color * make-rgba(1.0, 1.0, 1.0, child.alpha);
         end;
         on-event(make(<pre-render-event>, renderer: e.renderer), child);
         on-event(e, child);
