@@ -301,34 +301,6 @@ define method center-bottom (r :: <rect>) => (_ :: <vec2>)
   vec2(r.center-x, r.bottom)
 end;
 
-// Note: Intersection is not strict, so a point lying exactly on the
-// <rect> is considered to be contained in the <rect>.
-// TODO: Is this the right option? Could add a strict? keyword arg...
-// TODO: Also, I think I might have taken the opposite approach with <circle>..
-define method intersects? (r :: <rect>, pt :: <vec2>)
- => (intersection? :: <boolean>)
-  pt.vx >= r.left  &
-  pt.vx <= r.right &
-  pt.vy >= r.top   &
-  pt.vy <= r.bottom
-end;
-
-define method intersects? (pt :: <vec2>, r :: <rect>)
- => (intersection? :: <boolean>)
-  intersects?(r,pt)
-end;
-
-// Test if a and b intersect. This test is not strict in the sense that
-// even if the rects just touch on an edge or corner, they are still
-// considered to intersect.
-define method intersects? (a :: <rect>, b :: <rect>)
- => (intersection? :: <boolean>)
-  a.left <= b.right &
-  a.right >= b.left &
-  a.top <= b.bottom &
-  a.bottom >= b.top
-end;
-
 define method rect-intersection (a :: <rect>, b :: <rect>)
  => (result :: false-or(<rect>))
   let lt = max(a.left, b.left);

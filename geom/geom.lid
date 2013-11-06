@@ -7,3 +7,4 @@ files:   library
          alignment
          circle
          rect
+         intersection

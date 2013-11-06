@@ -174,6 +174,14 @@ define module rect
     transform-rect;
 end;
 
+define module intersection
+  use common-dylan;
+  use vec2;
+  use circle;
+  use rect;
+  use shapes;
+end;
+
 define module geom2
   use common-dylan;
   use vec2, export: all;
