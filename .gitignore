@@ -6,6 +6,6 @@ orlok/backend/cinder/cinder_0.8.4_mac/*
 *.swp
 *.hdp
 *.a
-*/.idea/*
+.idea/*
 */*.iml
 old/*

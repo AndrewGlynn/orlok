@@ -120,9 +120,9 @@ track can be played (with optional looping), and multiple ``<sound>`` instances
 may be triggered. Only wav and mp3 formats seem to work at the moment (and not
 all variations of those formats, either).
 
-Master volume and music volume may be modified independently, but there is
-presently no control over the volume of individual ``<sound>`` instances (nor
-control for pan, frequency changes, etc).
+Master volume and music volume, and individual <sound> volume may be modified
+independently, but there is presently no control over pan, frequency changes,
+etc.
 
 Bitmaps and Textures
 ....................

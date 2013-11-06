@@ -14,7 +14,7 @@ all: cinder_backend.h cinder_backend.cpp
 	ar -r orlok_cinder_backend.a cinder_backend.o
 	mkdir -p ../../../_build/build/orlok
 	cp orlok_cinder_backend.a ../../../_build/build/orlok
-	cp cinder_0.8.4_mac/lib/libcinder.a ../../../_build/build/orlok
+	cp $(CINDER_PATH)/lib/libcinder.a ../../../_build/build/orlok
 	
 clean:
 	rm -f $(OBJS) orlok_cinder_backend.a
