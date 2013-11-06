@@ -12,9 +12,11 @@ Orlok is buggy. Orlok is inefficient. Orlok only works on Mac OS X
 Setup
 -----
 
-You'll need to download libcinder from:
+You'll need to download version 0.8.4 of libcinder from:
 
   http://libcinder.org/releases/cinder_0.8.4_mac.zip
+
+(Note that this is *not* the latest release version.)
 
 Extract into orlok/backend/cinder (this should create a cinder_0.8.4_mac
 directory under orlok/backend/cinder).
