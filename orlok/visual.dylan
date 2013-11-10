@@ -587,24 +587,27 @@ define method object-alignment-offset (v :: <visual>,
                                        h-align-amount :: <single-float>,
                                        v-align-amount :: <single-float>)
  => (x-offset :: <single-float>, y-offset :: <single-float>)
-  object-alignment-offset(v.bounding-rect, h-align-amount, v-align-amount)
+  let (dx, dy) = object-alignment-offset(v.bounding-rect,
+                                         h-align-amount,
+                                         v-align-amount);
+  values(dx, dy)
 end;
 
 define method align-object (v :: <visual>,
                             h-align-amount :: false-or(<single-float>),
                             v-align-amount :: false-or(<single-float>),
                             align-to :: <vec2>) => ()
-  let bounds = v.bounding-rect;
-  let (dx, dy) = object-alignment-offset(v,
+  let (dx, dy) = object-alignment-offset(v.bounding-rect,
                                          h-align-amount | 0.0,
                                          v-align-amount | 0.0);
+  let d = transform(vec2(dx, dy), v.transform-2d);
 
   if (h-align-amount)
-    v.pos-x := align-to.vx - dx;
+    v.pos-x := align-to.vx - d.vx;
   end;
 
   if (v-align-amount)
-    v.pos-y := align-to.vy - dy;
+    v.pos-y := align-to.vy - d.vy;
   end;
 end;
 
@@ -687,9 +690,8 @@ define function align-visual (v :: <visual>,
                               alignment :: <alignment>,
                               target :: <visual>,
                               target-alignment :: <alignment>) => ()
-
-  let target-pt = local-to-global(alignment-point(target, target-alignment),
-                                  target);
+  let (dx, dy) = alignment-offset(target, target-alignment);
+  let target-pt = local-to-global(vec2(dx, dy), target);
 
   if (v.parent)
     target-pt := global-to-local(target-pt, v.parent);

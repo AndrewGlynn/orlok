@@ -12,7 +12,15 @@ end;
 define sealed method bounding-rect (txt :: <text-field>)
  => (bounds :: <rect>)
   let bounds = font-extents(txt.text-font, txt.text-string);
-  align(txt.text-alignment, of: bounds, to: bounds.left-top);
+
+  // trim off area to left and below text reference point
+  let clipped-bounds = shallow-copy(bounds);
+  clipped-bounds.left   := 0.0;
+  clipped-bounds.bottom := 0.0;
+  let (dx, dy) = alignment-offset(clipped-bounds, txt.text-alignment);
+
+  move-rect(bounds, vec2(-dx, -dy));
+
   bounds
 end;
 

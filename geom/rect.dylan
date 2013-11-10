@@ -450,13 +450,12 @@ define sealed method align-object (r :: <rect>,
   let (dx, dy) = object-alignment-offset(r,
                                          h-align-amount | 0.0,
                                          v-align-amount | 0.0);
-
   if (h-align-amount)
-    r.%left := align-to.vx - dx;
+    r.%left := align-to.vx - (dx - r.left);
   end;
 
   if (v-align-amount)
-    r.%top := align-to.vy - dy;
+    r.%top := align-to.vy - (dy - r.top);
   end;
 end;
 

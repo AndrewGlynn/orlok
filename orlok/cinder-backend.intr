@@ -1101,15 +1101,19 @@ end;
 define method draw-rect (ren :: <cinder-gl-renderer>,
                          rect :: <rect>,
                          #key at :: <vec2> = vec2(0, 0),
-                              align :: <alignment> = $left-top,
+                              align :: false-or(<alignment>) = #f,
                               texture: tex :: false-or(<texture>) = #f,
                               texture-rect: tex-rect :: false-or(<rect>) = #f,
                               shader: sh :: false-or(<shader>) = #f,
                               color :: false-or(<color>) = #f) => ()
-  with-saved-state (ren.texture, ren.shader)
-    let (dx, dy) = alignment-offset(rect, align);
-    let v = at - vec2(dx, dy);
-    translate!(ren.transform-2d, v);
+  with-saved-state (ren.texture, ren.shader, ren.transform-2d)
+    let v = at.xy;
+    if (align)
+      let (dx, dy) = alignment-offset(rect, align);
+      v.vx := v.vx - dx;
+      v.vy := v.vy - dy;
+    end;
+    translate!(ren, v);
 
     // Note: Color takes precedence over shader (for no particular reason).
     if (color & sh)
@@ -1166,36 +1170,22 @@ define function text-alignment-offset (text :: <string>,
                                        font :: <font>,
                                        align :: <alignment>)
  => (offset :: <vec2>)
-  let rect = font-extents(font, text);
-
-  let (dx, dy) = alignment-offset(rect, align);
-
-  // TODO: Why do I not have to do this? At least for the OpenGL version.
-  //       Probably the cairo version is now broken?
-  // Compensate for the fact that cinder/cairo render relative to the
-  // text reference point (left of first character, on baseline).
-  //dx := dx + rect.left;
-  //dy := dy + rect.top;
-
-  vec2(-dx, -dy);
-
-/*
-  if (align ~== $left-bottom) // optimize for common case
+  if (align == $left-bottom)
+    vec2(0, 0) // optimize for common case
+  else
     let rect = font-extents(font, text);
 
-    // adjust rect so that $left-bottom is at 0,0 (text reference point)
+    // Adjust rect so that $left-bottom is at 0,0 (text reference point).
+    // Essentially, we trim off the portion of the full extent below the
+    // baseline (ie, the descender), as well as anything to the left of the
+    // reference point. We then align based on this trimmed rect.
     rect.left := 0.0;
     rect.bottom := 0.0;
 
     let (dx, dy) = alignment-offset(rect, align);
 
-    // also adjust for the fact that cinder/cairo already use the text reference
-    // point as the origin (subtract height)
-    vec2(dx, dy - rect.height);
-  else
-    vec2(0.0, 0.0)
+    vec2(-dx, -dy)
   end;
-*/
 end;
 
 define method draw-text (ren :: <cinder-gl-renderer>,

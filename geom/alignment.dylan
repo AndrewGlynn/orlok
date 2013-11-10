@@ -55,7 +55,7 @@ end;
 // alignment is equal to a specified value.
 define function h-align (alignment :: <h-alignment>,
 		         #key of :: <object>,
-                              to :: <real>) => ()
+                  to :: <real>) => ()
   align-object(of, alignment.h-align-amount, #f, vec2(to, 0.0));
 end;
 
@@ -63,7 +63,7 @@ end;
 // alignment is equal to a specified value.
 define function v-align (alignment :: <v-alignment>,
 		         #key of :: <object>,
-                              to :: <real>) => ()
+                  to :: <real>) => ()
   align-object(of, #f, alignment.v-align-amount, vec2(0.0, to));
 end;
 
@@ -87,19 +87,12 @@ define method alignment-offset (object, align :: <v-alignment>)
   object-alignment-offset(object, 0.0, align.v-align-amount)
 end;
 
-// Get the point at the alignment point specified for the given object.
-// The result is in obj's coordinate space.
-define function alignment-point (obj, alignment :: <alignment>)
- => (pt :: <vec2>)
-  let (x, y) = alignment-offset(obj, alignment);
-  vec2(x, y)
-end;
 
 // Move object such that its point h-align-amount along its width and
 // v-align-amount down its height is aligned with the point align-to.
 // If h-align-amount is #f, only move object vertically (i.e., only v-align).
 // If v-align-amount is #f, only move object horizontally (i.e., only h-align).
-// Note that this generic is mainly for implementors of methods. Clients will
+// Note that this generic is mainly for implementers of methods. Clients will
 // generally use the ‘align’ function, which is simpler and nicer looking, and
 // calls align-object internally.
 define open generic align-object (object,

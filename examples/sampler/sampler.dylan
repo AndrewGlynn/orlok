@@ -349,8 +349,6 @@ define function create-alignment-page (app :: <sampler-app>) => (page :: <visual
                color: make-hsb(0.0, 0.7, 1.0),
                rect: shallow-copy(r));
 
-  align($center, of: b, to: app.bounding-rect.center);
-
   let b-lt = make(<box>, color: make-hsb(40.0, 0.7, 1.0), rect: shallow-copy(r));
   let b-rt = make(<box>, color: make-hsb(80.0, 0.7, 1.0), rect: shallow-copy(r));
   let b-lb = make(<box>, color: make-hsb(120.0, 0.7, 1.0), rect: shallow-copy(r));
@@ -360,7 +358,7 @@ define function create-alignment-page (app :: <sampler-app>) => (page :: <visual
   let b-ct = make(<box>, color: make-hsb(280.0, 0.7, 1.0), rect: shallow-copy(r));
   let b-cb = make(<box>, color: make-hsb(320.0, 0.7, 1.0), rect: shallow-copy(r));
 
-  // We root b and b2 under a common ancestor in order to align them.
+  // Note that we root all boxes under a common ancestor in order to align them.
   add-child(page, b);
   add-child(page, b-lt);
   add-child(page, b-rt);
@@ -371,7 +369,9 @@ define function create-alignment-page (app :: <sampler-app>) => (page :: <visual
   add-child(page, b-ct);
   add-child(page, b-cb);
 
+  align($center, of: b, to: app.bounding-rect.center);
   label-box(b, "center");
+
   align-visual(b-lt, $right-bottom, b, $left-top);
   align-visual(b-rt, $left-bottom, b, $right-top);
   align-visual(b-lb, $right-top, b, $left-bottom);
@@ -652,7 +652,7 @@ define function make-button (txt :: <string>,
                                color: color,
                                alignment: alignment);
           txt-field.pos := txt-field.pos + vec2(dx, dy);
-          txt-field; 
+          txt-field;
         end;
 
   let btn = make(<group-visual>);

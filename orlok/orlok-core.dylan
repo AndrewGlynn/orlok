@@ -677,7 +677,7 @@ define open generic clear (clearable, paint) => ();
 // color is specified.
 define generic draw-rect (ren :: <renderer>, rect :: <rect>,
                           #key at :: <vec2> = vec2(0, 0),
-                               align :: <alignment> = $left-top,
+                               align :: false-or(<alignment>) = #f,
                                texture :: false-or(<texture>) = #f,
                                texture-rect :: false-or(<rect>) = #f,
                                shader :: false-or(<shader>) = #f,

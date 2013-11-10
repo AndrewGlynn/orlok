@@ -119,7 +119,6 @@ define module alignment
       h-align,
       v-align,
       alignment-offset,
-      alignment-point,
 
       align-object,
       object-alignment-offset;
