@@ -203,7 +203,7 @@ define inline function hsv->rgb
     let c = v * s; // chroma
     let x = c * (1.0 - abs(modulo(h, 2) - 1));
     let m = v - c;
-    let sector = floor(h);
+    let sector = min(floor(h), 5);
 
     c := c + m;
     x := x + m;

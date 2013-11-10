@@ -449,6 +449,7 @@ end module;
 
 define module orlok
   use common-dylan;
+  use utils, export: all;
   use geom2, export: all;
   use dtween, export: all;
   use color, export: all;

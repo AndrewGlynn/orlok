@@ -58,6 +58,7 @@ define module vec2
     vy, vy-setter,
     xy, xy-setter,
     yx, yx-setter,
+    scale-vec, scale-vec!,
     dot,
     cross,
     unitize, unitize!,
@@ -164,6 +165,7 @@ define module rect
     center-top,
     center-bottom,
 
+    rect-size,
     rect-intersection,
     rect-union,
     bound-points-with-rect,

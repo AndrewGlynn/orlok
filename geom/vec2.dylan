@@ -119,6 +119,18 @@ define sealed method \/ (a :: <single-float>, b :: <vec2>) => (c :: <vec2>)
   vec2(a / b.vx, a / b.vy)
 end;
 
+// Scale v component-wise by s. I guess this is the Hadamard product if we
+// consider <vec2> to be a matrix?
+define function scale-vec (v :: <vec2>, s :: <vec2>) => (new-v :: <vec2>)
+  vec2(v.vx * s.vx, v.vy * s.vy)
+end;
+
+define function scale-vec! (v :: <vec2>, s :: <vec2>) => (v :: <vec2>)
+  v.vx := v.vx * s.vx;
+  v.vy := v.vy * s.vy;
+  v
+end;
+
 define inline sealed method dot (a :: <vec2>, b :: <vec2>)
     => (d :: <single-float>)
   (a.vx * b.vx) + (a.vy * b.vy)
@@ -130,7 +142,6 @@ define sealed inline method cross (a :: <vec2>, b :: <vec2>)
     => (c :: <single-float>)
   (a.vx * b.vy) - (a.vy * b.vx)
 end;
-
 
 // TODO: The #key is to allow for adding an epsilon factor to avoid problems
 // with zero-length vectors, but do I really care? Currently this is used in

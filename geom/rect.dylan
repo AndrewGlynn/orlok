@@ -98,6 +98,7 @@ define method initialize (rect :: <rect>,
     r & cx => rect.left  := rect.right - (rect.right - cx) * 2.0;
     l & w  => rect.right := rect.left  + w;
     r & w  => rect.left  := rect.right - w;
+    cx & w => rect.left  := cx - w / 2.0; rect.right := cx + w / 2.0;
     otherwise => #f; // not a problem!
   end;
 
@@ -106,6 +107,7 @@ define method initialize (rect :: <rect>,
     t & cy => rect.bottom := rect.top + (cy - rect.top) * 2.0;
     b & h  => rect.top    := rect.bottom - h;
     t & h  => rect.bottom := rect.top + h;
+    cy & h => rect.top := cy - h / 2.0; rect.bottom := cy + h / 2.0;
     otherwise => #f; // not a problem!
   end;
 end;
@@ -299,6 +301,10 @@ end;
 
 define method center-bottom (r :: <rect>) => (_ :: <vec2>)
   vec2(r.center-x, r.bottom)
+end;
+
+define function rect-size (r :: <rect>) => (size :: <vec2>)
+  vec2(r.width, r.height)
 end;
 
 define method rect-intersection (a :: <rect>, b :: <rect>)
