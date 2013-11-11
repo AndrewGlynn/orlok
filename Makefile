@@ -4,11 +4,11 @@ LIBCINDER = orlok/backend/cinder/libcinder.a
 ORLOK_CINDER_BACKEND = orlok/backend/cinder/orlok_cinder_backend.a
 
 
-.PHONY: clean all orlok examples simple-app sampler 
+.PHONY: clean all orlok examples simple-app sampler bricks
 
 all: examples
 orlok: $(ORLOK)
-examples: simple-app sampler
+examples: simple-app sampler bricks
 
 $(ORLOK_CINDER_BACKEND): orlok/backend/cinder/cinder_backend.h orlok/backend/cinder/cinder_backend.cpp
 	cd orlok/backend/cinder; make
@@ -28,6 +28,11 @@ sampler: $(ORLOK)
 	dylan-compiler -build sampler
 	cp _build/bin/sampler examples/sampler/sampler.app/Contents/MacOS
 	cp _build/lib/*.dylib examples/sampler/sampler.app/Contents/lib
+
+bricks: $(ORLOK)
+	dylan-compiler -build bricks
+	cp _build/bin/bricks examples/bricks/bricks.app/Contents/MacOS
+	cp _build/lib/*.dylib examples/bricks/bricks.app/Contents/lib
 
 clean:
 	rm -rf _build
