@@ -18,11 +18,12 @@ define constant $paddle-width  = 100.0;
 define constant $paddle-height = 10.0;
 
 define constant $brick-cols    = 12;
+define constant $brick-rows    = 5;
+
 // mostly fill the width, with a little gap on either side
 define constant $brick-width   = ($world-width - 2 * $wall-width) /
                                  ($brick-cols + 2);
 define constant $brick-height  = $brick-width * 0.35;
-define constant $brick-rows    = 5;
 
 define constant $wall-color    = $gray;
 define constant $paddle-color  = $gray;
@@ -70,6 +71,102 @@ define class <bricks-app> (<app>)
   slot tween-group :: <tween-group> = make(<tween-group>);
 end;
 
+//----------------------------------------------------------------------------
+// Event Handling
+//----------------------------------------------------------------------------
+
+define method on-event (e :: <startup-event>, app :: <bricks-app>) => ()
+  next-method();
+  app.cursor-visible? := #f;
+  init-level(app);
+end;
+
+define method on-event (e :: <shutdown-event>, app :: <bricks-app>) => ()
+  next-method();
+end;
+
+define method on-event (e :: <update-event>, app :: <bricks-app>) => ()
+  next-method();
+
+  // This tween group is used for various timers and effects. It is paused
+  // when the game is paused.
+  update-tween-group(app.tween-group, e.delta-time);
+
+  select (app.state)
+    $game-state-start =>
+      // keep ball attached to paddle when in start state
+      align($center-bottom,
+            of: app.ball.shape,
+            to: app.paddle.shape.center-top + vec2(0, -5));
+    $game-state-run =>
+      update-brick-edges(app);
+      move-rect(app.ball.shape, app.ball.velocity * e.delta-time);
+      check-collisions(app);
+    otherwise => #f; // nothing to do
+  end;
+end;
+
+define method on-event (e :: <render-event>, app :: <bricks-app>) => ()
+  next-method();
+  clear(e.renderer, $black);
+
+  draw-rect(e.renderer,
+            make(<rect>,
+                 left: 0, right: $left-edge,
+                 top: 0, bottom: $world-height),
+            color: $wall-color);
+  draw-rect(e.renderer,
+            make(<rect>,
+                 left: $right-edge, right: $world-width,
+                 top: 0, bottom: $world-height),
+            color: $wall-color);
+  draw-rect(e.renderer,
+            make(<rect>,
+                 left: $left-edge, right: $right-edge,
+                 top: 0, bottom: $top-edge),
+            color: $wall-color);
+
+  for (b in app.bricks)
+    if (b.alive?)
+      draw-rect(e.renderer, b.shape, color: b.color);
+    end;
+  end;
+
+  draw-rect(e.renderer, app.paddle.shape, color: $paddle-color);
+  draw-rect(e.renderer, app.ball.shape, color: $ball-color);
+end;
+
+define method on-event (e :: <mouse-move-event>, app :: <bricks-app>) => ()
+  // paddle follows mouse...
+  if (app.state == $game-state-start |
+      app.state == $game-state-run |
+      app.state == $game-state-respawn)
+    h-align($h-center, of: app.paddle.shape, to: e.mouse-x);
+  end;
+
+  // ...but is constrained by walls
+  if (app.paddle.shape.left < $left-edge)
+    h-align($left, of: app.paddle.shape, to: $left-edge);
+  end;
+  if (app.paddle.shape.right > $right-edge)
+    h-align($right, of: app.paddle.shape, to: $right-edge);
+  end;
+end;
+
+define method on-event (e :: <mouse-button-down-event>, app :: <bricks-app>)
+ => ()
+  if (app.state == $game-state-start)
+    // launch the ball at an arbitrary angle
+    app.ball.velocity := rotate-vec(vec2(0, -$ball-speed), $single-pi / 6);
+    app.state := $game-state-run;
+  end;
+end;
+
+define method on-event (e :: <key-down-event>, app :: <bricks-app>) => ()
+  if (e.key-id == $key-escape)
+    quit-app(app);
+  end;
+end;
 
 //----------------------------------------------------------------------------
 // Helpers
@@ -208,111 +305,14 @@ define function respawn (app :: <bricks-app>) => ()
 end;
 
 define function game-over (app :: <bricks-app>) => ()
-app.state := $game-state-over;
-app.cursor-visible? := #t;
+  app.state := $game-state-over;
+  app.cursor-visible? := #t;
 end;
 
 define function win (app :: <bricks-app>) => ()
-app.state := $game-state-win;
-app.ball.velocity := vec2(0, 0);
-app.cursor-visible? := #t;
-end;
-
-//----------------------------------------------------------------------------
-// Event Handling
-//----------------------------------------------------------------------------
-
-define method on-event (e :: <startup-event>, app :: <bricks-app>) => ()
-  next-method();
-  app.cursor-visible? := #f;
-  init-level(app);
-end;
-
-define method on-event (e :: <shutdown-event>, app :: <bricks-app>) => ()
-  next-method();
-end;
-
-define method on-event (e :: <update-event>, app :: <bricks-app>) => ()
-  next-method();
-
-  // This tween group is used for various timers and effects. It is paused
-  // when the game is paused.
-  update-tween-group(app.tween-group, e.delta-time);
-
-  select (app.state)
-    $game-state-start =>
-      // keep ball attached to paddle when in start state
-      align($center-bottom,
-            of: app.ball.shape,
-            to: app.paddle.shape.center-top + vec2(0, -5));
-    $game-state-run =>
-      update-brick-edges(app);
-      move-rect(app.ball.shape, app.ball.velocity * e.delta-time);
-      check-collisions(app);
-    otherwise => #f; // nothing to do
-  end;
-end;
-
-define method on-event (e :: <render-event>, app :: <bricks-app>) => ()
-  next-method();
-  clear(e.renderer, $black);
-
-  draw-rect(e.renderer,
-            make(<rect>,
-                 left: 0, right: $left-edge,
-                 top: 0, bottom: $world-height),
-            color: $wall-color);
-  draw-rect(e.renderer,
-            make(<rect>,
-                 left: $right-edge, right: $world-width,
-                 top: 0, bottom: $world-height),
-            color: $wall-color);
-  draw-rect(e.renderer,
-            make(<rect>,
-                 left: $left-edge, right: $right-edge,
-                 top: 0, bottom: $top-edge),
-            color: $wall-color);
-
-  for (b in app.bricks)
-    if (b.alive?)
-      draw-rect(e.renderer, b.shape, color: b.color);
-    end;
-  end;
-
-  draw-rect(e.renderer, app.paddle.shape, color: $paddle-color);
-  draw-rect(e.renderer, app.ball.shape, color: $ball-color);
-end;
-
-define method on-event (e :: <mouse-move-event>, app :: <bricks-app>) => ()
-  // paddle follows mouse...
-  if (app.state == $game-state-start |
-      app.state == $game-state-run |
-      app.state == $game-state-respawn)
-    h-align($h-center, of: app.paddle.shape, to: e.mouse-x);
-  end;
-
-  // ...but is constrained by walls
-  if (app.paddle.shape.left < $left-edge)
-    h-align($left, of: app.paddle.shape, to: $left-edge);
-  end;
-  if (app.paddle.shape.right > $right-edge)
-    h-align($right, of: app.paddle.shape, to: $right-edge);
-  end;
-end;
-
-define method on-event (e :: <mouse-button-down-event>, app :: <bricks-app>)
- => ()
-  if (app.state == $game-state-start)
-    // launch the ball at an arbitrary angle
-    app.ball.velocity := rotate-vec(vec2(0, -$ball-speed), $single-pi / 6);
-    app.state := $game-state-run;
-  end;
-end;
-
-define method on-event (e :: <key-down-event>, app :: <bricks-app>) => ()
-  if (e.key-id == $key-escape)
-    quit-app(app);
-  end;
+  app.state := $game-state-win;
+  app.ball.velocity := vec2(0, 0);
+  app.cursor-visible? := #t;
 end;
 
 //----------------------------------------------------------------------------
