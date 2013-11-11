@@ -77,6 +77,7 @@ define module orlok-core
 
     <app>,
     config,
+    cursor-visible?, cursor-visible?-setter,
 
     <app-config>,
     window-width,

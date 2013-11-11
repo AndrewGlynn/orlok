@@ -38,6 +38,7 @@ end function;
 define open abstract class <app> (<object>)
   constant slot config :: <app-config>,
     required-init-keyword: config:;
+  virtual slot cursor-visible? :: <boolean>;
   constant slot dispose-on-shutdown-pool :: <table> = make(<table>);
 end class;
 

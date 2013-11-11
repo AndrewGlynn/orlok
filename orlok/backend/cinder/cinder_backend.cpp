@@ -109,6 +109,24 @@ void cinder_set_full_screen(int fullscreen)
     cinder_app->setFullScreen(fullscreen);
 }
 
+float cinder_get_average_fps()
+{
+    return cinder_app->getAverageFps();
+}
+
+void cinder_set_cursor_visible(int visible)
+{
+    if (visible)
+    {
+        cinder_app->showCursor();
+    }
+    else
+    {
+        cinder_app->hideCursor();
+    }
+}
+
+
 float cinder_audio_get_master_volume()
 {
     return audio::Output::getVolume();
@@ -199,11 +217,6 @@ float cinder_audio_get_music_volume(void* musicPtr)
 {
     audio::TrackRef* track = static_cast<audio::TrackRef*>(musicPtr);
     return (*track)->getVolume();
-}
-
-float cinder_get_average_fps()
-{
-    return cinder_app->getAverageFps();
 }
 
 // Surface (aka Bitmap) stuff

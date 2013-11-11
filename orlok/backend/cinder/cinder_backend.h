@@ -25,6 +25,7 @@ void cinder_quit();
 /* TODO: remove? void cinder_set_app_size(int width, int height, BOOL forceAspectRatio); */
 void cinder_set_full_screen(BOOL fullscreen);
 float cinder_get_average_fps();
+void cinder_set_cursor_visible(BOOL visible);
 
 /* Audio */
 

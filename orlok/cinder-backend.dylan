@@ -16,6 +16,7 @@ define variable *mouse-y* :: <real> = 0;
 define variable *mouse-left-button?* :: <boolean> = #f;
 define variable *mouse-right-button?* :: <boolean> = #f;
 define variable *mouse-middle-button?* :: <boolean> = #f;
+define variable *cursor-visible?* :: <boolean> = #t;
 
 // This should be a <double-float>, but there is a bug in the Dylan C backend
 // that currently prevents this.
@@ -155,6 +156,20 @@ end;
 
 define sealed method mouse-middle-button? (app :: <app>) => (down? :: <boolean>)
   *mouse-middle-button?*
+end;
+
+define sealed method cursor-visible? (app :: <app>) => (visible? :: <boolean>)
+  *cursor-visible?*
+end;
+
+define sealed method cursor-visible?-setter (visible? :: <boolean>,
+                                             app :: <app>)
+ => (visible? :: <boolean>)
+  if (visible? ~== *cursor-visible?*)
+    *cursor-visible?* := visible?;
+    cinder-set-cursor-visible(visible?);
+  end;
+  visible?
 end;
 
 define constant $vert-pass-thru-shader =
@@ -1551,6 +1566,11 @@ end;
 define C-function cinder-get-average-fps
   result res :: <C-float>;
   c-name: "cinder_get_average_fps";
+end;
+
+define C-function cinder-set-cursor-visible
+  input parameter visible_ :: <c-boolean>;
+  c-name: "cinder_set_cursor_visible";
 end;
 
 define C-function cinder-audio-get-master-volume
