@@ -32,7 +32,7 @@ define constant $initial-lives = 3;
 
 define class <ball> (<object>)
   constant slot shape :: <rect>, required-init-keyword: rect:;
-  slot velocity :: <vec2>, required-init-keyword: velocity:;
+  slot velocity :: <vec2> = vec2(0, 0);
 end;
 
 define class <paddle> (<object>)
@@ -56,15 +56,24 @@ define enum <game-state> ()
   $game-state-run;     // normal play
   $game-state-respawn; // died and waiting to respawn next ball
   $game-state-over;    // game over
+  $game-state-win;     // hooray!
 end;
 
 define class <bricks-app> (<app>)
-  slot ball   :: <ball>;
-  slot paddle :: <paddle>;
-  slot bricks :: <array>;
-  slot state  :: <game-state> = $game-state-start;
-  slot lives  :: <integer> = $initial-lives;
+  slot ball    :: <ball>;
+  slot paddle  :: <paddle>;
+  slot bricks  :: <array>;
+  slot state   :: <game-state> = $game-state-start;
+  slot paused? :: <boolean> = #f;
+  slot lives   :: <integer> = $initial-lives;
+
+  slot tween-group :: <tween-group> = make(<tween-group>);
 end;
+
+
+//----------------------------------------------------------------------------
+// Helpers
+//----------------------------------------------------------------------------
 
 define function update-brick-edges (app :: <bricks-app>) => ()
   // Make exposed brick edges active.
@@ -107,9 +116,12 @@ define function check-collisions (app :: <bricks-app>) => ()
   if (app.ball.shape.top > $bottom-edge)
     die(app);
   end;
+
+  if (~any?(alive?, app.bricks))
+    win(app);
+  end;
 end;
 
-// dirty little approximation
 define method deflect-ball (ball :: <ball>, brick :: <brick>) => ()
   let a = ball.shape;
   let b = brick.shape;
@@ -119,11 +131,13 @@ define method deflect-ball (ball :: <ball>, brick :: <brick>) => ()
   let over-top?    = (a.bottom > b.top & a.top < b.top);
   let over-bottom? = (a.top < b.bottom & a.bottom > b.top);
 
+  // bounce off of vertical edges
   if ((brick.left-active? & over-left? & ball.velocity.vx > 0) |
       (brick.right-active? & over-right? & ball.velocity.vx < 0))
     ball.velocity.vx := -ball.velocity.vx;
   end;
 
+  // bounce off of horizontal edges
   if ((brick.top-active? & over-top? & ball.velocity.vy > 0) |
       (brick.bottom-active? & over-bottom? & ball.velocity.vy < 0))
     ball.velocity.vy := -ball.velocity.vy;
@@ -143,7 +157,6 @@ end;
 
 define function init-level (app :: <bricks-app>) => ()
   app.ball := make(<ball>,
-                   velocity: vec2(0, $ball-speed),
                    rect: make(<rect>,
                               center-x: $world-width / 2.0,
                               center-y: $world-height - 200,
@@ -175,15 +188,43 @@ define function init-level (app :: <bricks-app>) => ()
 end;
 
 define function die (app :: <bricks-app>) => ()
-  // TODO
+  app.lives := app.lives - 1;
+  if (app.lives > 0)
+    respawn(app);
+  else
+    game-over(app);
+  end;
 end;
 
 define function hit-brick (brick :: <brick>) => ()
   brick.alive? := #f;
 end;
 
+define function respawn (app :: <bricks-app>) => ()
+  app.state := $game-state-respawn;
+  delay (2.0, group: app.tween-group)
+    app.state := $game-state-start;
+  end;
+end;
+
+define function game-over (app :: <bricks-app>) => ()
+app.state := $game-state-over;
+app.cursor-visible? := #t;
+end;
+
+define function win (app :: <bricks-app>) => ()
+app.state := $game-state-win;
+app.ball.velocity := vec2(0, 0);
+app.cursor-visible? := #t;
+end;
+
+//----------------------------------------------------------------------------
+// Event Handling
+//----------------------------------------------------------------------------
+
 define method on-event (e :: <startup-event>, app :: <bricks-app>) => ()
   next-method();
+  app.cursor-visible? := #f;
   init-level(app);
 end;
 
@@ -193,9 +234,23 @@ end;
 
 define method on-event (e :: <update-event>, app :: <bricks-app>) => ()
   next-method();
-  update-brick-edges(app);
-  move-rect(app.ball.shape, app.ball.velocity * e.delta-time);
-  check-collisions(app);
+
+  // This tween group is used for various timers and effects. It is paused
+  // when the game is paused.
+  update-tween-group(app.tween-group, e.delta-time);
+
+  select (app.state)
+    $game-state-start =>
+      // keep ball attached to paddle when in start state
+      align($center-bottom,
+            of: app.ball.shape,
+            to: app.paddle.shape.center-top + vec2(0, -5));
+    $game-state-run =>
+      update-brick-edges(app);
+      move-rect(app.ball.shape, app.ball.velocity * e.delta-time);
+      check-collisions(app);
+    otherwise => #f; // nothing to do
+  end;
 end;
 
 define method on-event (e :: <render-event>, app :: <bricks-app>) => ()
@@ -229,15 +284,28 @@ define method on-event (e :: <render-event>, app :: <bricks-app>) => ()
 end;
 
 define method on-event (e :: <mouse-move-event>, app :: <bricks-app>) => ()
-  // paddle follows mouse
-  h-align($h-center, of: app.paddle.shape, to: e.mouse-x);
+  // paddle follows mouse...
+  if (app.state == $game-state-start |
+      app.state == $game-state-run |
+      app.state == $game-state-respawn)
+    h-align($h-center, of: app.paddle.shape, to: e.mouse-x);
+  end;
 
-  // but is constrained by walls
+  // ...but is constrained by walls
   if (app.paddle.shape.left < $left-edge)
     h-align($left, of: app.paddle.shape, to: $left-edge);
   end;
   if (app.paddle.shape.right > $right-edge)
     h-align($right, of: app.paddle.shape, to: $right-edge);
+  end;
+end;
+
+define method on-event (e :: <mouse-button-down-event>, app :: <bricks-app>)
+ => ()
+  if (app.state == $game-state-start)
+    // launch the ball at an arbitrary angle
+    app.ball.velocity := rotate-vec(vec2(0, -$ball-speed), $single-pi / 6);
+    app.state := $game-state-run;
   end;
 end;
 
@@ -247,12 +315,16 @@ define method on-event (e :: <key-down-event>, app :: <bricks-app>) => ()
   end;
 end;
 
+//----------------------------------------------------------------------------
+// Entry Point
+//----------------------------------------------------------------------------
 
 define function main (name, arguments)
   let cfg = make(<app-config>,
                  window-width: $world-width,
                  window-height: $world-height,
                  full-screen?: #f,
+                 force-app-aspect-ratio?: #t,
                  frames-per-second: 60);
   let app = make(<bricks-app>, config: cfg);
 
