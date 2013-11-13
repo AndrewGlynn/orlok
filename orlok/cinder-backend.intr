@@ -182,13 +182,13 @@ define constant $vert-pass-thru-shader =
 // Draw in a single color, but use alpha values from the current texture.
 define constant $frag-alpha-color-shader =
   "#version 110\n"
-  "uniform sampler2D tex0;                                      "
-  "uniform vec4 color;                                          "
-  "void main()                                                  "
-  "{                                                            "
-  "    gl_FragColor.rgb = color.rgb;                            "
-  "    gl_FragColor.a = texture2D(tex0, gl_TexCoord[0].st).a;   "
-  "}                                                            ";
+  "uniform sampler2D tex0;                                              "
+  "uniform vec4 color;                                                  "
+  "void main()                                                          "
+  "{                                                                    "
+  "    gl_FragColor.rgb = color.rgb;                                    "
+  "    gl_FragColor.a = texture2D(tex0, gl_TexCoord[0].st).a * color.a; "
+  "}                                                                    ";
 
 // Draw solid color, ignoring texture.
 define constant $frag-solid-color-shader =
@@ -197,8 +197,7 @@ define constant $frag-solid-color-shader =
   "uniform vec4 color;                                          "
   "void main()                                                  "
   "{                                                            "
-  "    gl_FragColor.rgb = color.rgb;                            "
-  "    gl_FragColor.a   = 1.0;                                  "
+  "    gl_FragColor = color;                                    "
   "}                                                            ";
 
 
@@ -1139,12 +1138,12 @@ define method draw-rect (ren :: <cinder-gl-renderer>,
       ren.shader := *alpha-color-shader*;
       ren.texture := tex;
       set-uniform(ren.shader, "tex0", 0); // assumes only one texture unit
-      set-uniform(ren.shader, "color", color);
+      set-uniform(ren.shader, "color", color * ren.render-color);
     elseif (color)
       ren.texture := #f;
       ren.shader := *solid-color-shader*;
       set-uniform(ren.shader, "tex0", 0); // assumes only one texture unit
-      set-uniform(ren.shader, "color", color);
+      set-uniform(ren.shader, "color", color * ren.render-color);
     else
       if (tex)
         ren.texture := tex;
@@ -1220,7 +1219,7 @@ define method draw-text (ren :: <cinder-gl-renderer>,
 
     if (color)
       ren.shader := *alpha-color-shader*;
-      set-uniform(ren.shader, "color", color);
+      set-uniform(ren.shader, "color", color * ren.render-color);
     elseif (sh)
       ren.shader := sh;
     end;
