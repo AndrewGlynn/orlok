@@ -377,6 +377,25 @@ define method on-event (e :: <update-event>,
   end;
 end;
 
+define function render-visual (v :: <visual>,
+                               e :: <render-event>,
+                               next :: <function>) => ()
+  if (should-render?(v))
+    with-saved-state (e.renderer.transform-2d, e.renderer.render-color)
+      unless (has-identity-transform?(v))
+        e.renderer.transform-2d := v.transform-2d * e.renderer.transform-2d;
+      end;
+      if (v.alpha < 1.0)
+        e.renderer.render-color :=
+          e.renderer.render-color * make-rgba(1.0, 1.0, 1.0, v.alpha);
+      end;
+      on-event(make(<pre-render-event>, renderer: e.renderer), v);
+      next(e, v);
+      on-event(make(<post-render-event>, renderer: e.renderer), v);
+    end;
+  end;
+end;
+
 // Render all the objects in a <visual-container>s display list, in order.
 // Thus the first element in the list will render first and will appear
 // furthest back.
@@ -388,20 +407,7 @@ define method on-event (e :: <render-event>,
   next-method();
 
   for (child in g.child-visuals.rep)
-    if (should-render?(child))
-      with-saved-state (e.renderer.transform-2d, e.renderer.render-color)
-        unless (has-identity-transform?(child))
-          e.renderer.transform-2d := child.transform-2d * e.renderer.transform-2d;
-        end;
-        if (child.alpha < 1.0)
-          e.renderer.render-color :=
-            e.renderer.render-color * make-rgba(1.0, 1.0, 1.0, child.alpha);
-        end;
-        on-event(make(<pre-render-event>, renderer: e.renderer), child);
-        on-event(e, child);
-        on-event(make(<post-render-event>, renderer: e.renderer), child);
-      end;
-    end;
+    render-visual(child, e, on-event);
   end;
 end;
 
@@ -506,15 +512,11 @@ end;
 define class <root-visual> (<group-visual>)
 end;
 
-define method on-event (e :: <render-event>, root :: <root-visual>) => ()
-  // <root-visual>s are the only ones that apply their own transform
-  // (since someone has to!)
-  with-saved-state (e.renderer.transform-2d)
-    unless (has-identity-transform?(root))
-      e.renderer.transform-2d := root.transform-2d * e.renderer.transform-2d;
-    end;
-    next-method();
-  end;
+define method on-event (e :: <render-event>,
+                        root :: <root-visual>,
+                        #next next) => ()
+  // note that we pass the next-method so that we don't enter a loop
+  render-visual(root, e, next);
 end;
 
 define method on-event (e :: <mouse-event>, root :: <root-visual>)
