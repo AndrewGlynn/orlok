@@ -6,7 +6,7 @@ define class <text-field> (<visual>)
   slot text-string    :: <string> = "", init-keyword: text:;
   slot text-font      :: <font>, required-init-keyword: font:;
   slot text-color     :: <color> = $black, init-keyword: color:;
-  slot text-alignment :: <alignment> = $left-bottom, init-keyword: alignment:;
+  slot text-alignment :: <alignment> = $left-bottom, init-keyword: align:;
 end;
 
 define sealed method bounding-rect (txt :: <text-field>)

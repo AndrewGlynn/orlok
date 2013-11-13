@@ -128,7 +128,7 @@ define function create-title-page (app :: <sampler-app>) => (page :: <visual>)
                    text: "Sampler",
                    font: app.fonts[#"droid-sans-40"],
                    color: hex-color(#xbbbbbb),
-                   alignment: $center);
+                   align: $center);
 
   title.pos-x := app.config.app-width / 2.0;
   title.pos-y := 50;
@@ -290,7 +290,7 @@ define function create-tweens-page (app :: <sampler-app>) => (page :: <visual>)
                          text: name, 
                          font: app.fonts[#"droid-sans-40"],
                          color: hex-color(#xddbbdd),
-                         alignment: $right-center);
+                         align: $right-center);
           txt.parent := page;
           txt.scale := vec2(.4, .4);
           align($right-center, of: txt, to: vec2(x - 30, y));
@@ -337,7 +337,7 @@ define function create-alignment-page (app :: <sampler-app>) => (page :: <visual
                                text: txt,
                                font: app.fonts[#"droid-sans-40"],
                                color: $black,
-                               alignment: $center);
+                               align: $center);
           txt-field.scale := vec2(.5, .5);
           add-child(b, txt-field);
           align-visual(txt-field, $center, b, $center);
@@ -419,7 +419,7 @@ define function create-images-page (app :: <sampler-app>) => (page :: <visual>)
                    text: "default anchor point (top-left)",
                    font: app.fonts[#"droid-sans-14"],
                    color: hex-color(#xcccccc),
-                   alignment: $center-bottom);
+                   align: $center-bottom);
   add-child(page, txt-1);
   align-visual(txt-1, $center-bottom, img-1, $center-top);
 
@@ -427,7 +427,7 @@ define function create-images-page (app :: <sampler-app>) => (page :: <visual>)
                    text: "anchor point centered",
                    font: app.fonts[#"droid-sans-14"],
                    color: hex-color(#xcccccc),
-                   alignment: $center-bottom);
+                   align: $center-bottom);
   add-child(page, txt-2);
   align-visual(txt-2, $center-bottom, img-2, $center-top);
 
@@ -650,7 +650,7 @@ define function make-button (txt :: <string>,
                                text: txt,
                                font: the-app().fonts[#"droid-sans-40"],
                                color: color,
-                               alignment: alignment);
+                               align: alignment);
           txt-field.pos := txt-field.pos + vec2(dx, dy);
           txt-field;
         end;
