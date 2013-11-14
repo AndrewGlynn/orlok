@@ -617,8 +617,6 @@ define module visual
     running?, running?-setter,
     interactive?, interactive?-setter,
     parent, parent-setter,
-    
-    should-render?,
 
     attach-behavior,
     remove-behavior,

@@ -96,9 +96,15 @@ define method parent-setter (new-parent :: false-or(<visual-container>),
   new-parent
 end;
 
-define method should-render? (v :: <visual>)
+define function should-render? (v :: <visual>)
  => (render? :: <boolean>)
   v.visible? & v.alpha > 0.0 & v.scale-x ~= 0.0 & v.scale-y ~= 0.0
+end;
+
+// note - we don't send input events if the visual is not rendered
+define function should-interact? (v :: <visual>)
+ => (interactive? :: <boolean>)
+  v.interactive? & should-render?(v)
 end;
 
 // Default handler method of <visual> just dispatches to the
@@ -443,7 +449,7 @@ define method on-event (e :: <mouse-event>, g :: <group-visual>)
       return(#t);
     else
       for (child in g.child-visuals using backward-iteration-protocol)
-        if (child.interactive? & child.has-invertible-transform?)
+        if (should-interact?(child) & child.has-invertible-transform?)
           let new-e = transform-visual-event(child, e);
           if (intersects?(child.bounding-rect, new-e.mouse-vector))
             if (~has-key?(g.was-mouse-over?, child))
