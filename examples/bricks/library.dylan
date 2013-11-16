@@ -12,4 +12,6 @@ define module bricks
   use simple-random;
   use transcendentals;
   use orlok;
+  use visual;
+  use full-screen-effects;
 end;
