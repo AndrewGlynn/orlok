@@ -115,7 +115,7 @@ end;
 define sealed method shallow-copy (r :: <rect>) => (copy :: <rect>)
   make(<rect>,
        left:   r.left,
-       bottom: r.bottom,
+       top:    r.top,
        width:  r.width,
        height: r.height)
 end;
@@ -431,8 +431,8 @@ end;
 define sealed method \- (r :: <rect>,
                          v :: <vec2>) => (new-rect :: <rect>)
  make(<rect>,
-      left:   r.left  - v.vx,
-      right:  r.right - v.vy,
+      left:   r.left - v.vx,
+      top:    r.top  - v.vy,
       width:  r.width,
       height: r.height)
 end;
