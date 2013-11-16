@@ -49,20 +49,34 @@ define method dispose (img :: <image>) => ()
   un-ref(img.image-source);
 end;
 
+// Create a new image from an existing source.
+// If sub-rectangle is not #f, the resulting <image> will only consist of the
+// specified portion of the source.
+// The anchor-pt keyword specifies the pixel in the image (or sub-rectangle
+// of the image) that will be treated as the local origin. If align is not #f,
+// the anchor-pt will be set based on the given alignment, overriding the
+// passed in anchor-pt, if any.
+define generic create-image-from (source-to-copy,
+                                  #key sub-rectangle :: false-or(<rect>),
+                                       anchor-pt :: false-or(<vec2>),
+                                       align :: false-or(<alignment>))
+ => (img :: <image>);
+
 // Create a new <image> from another <image>.
 // The new <image> will share the same <texture> as the old one.
 define method create-image-from (img-to-copy :: <image>,
                                  #key sub-rectangle :: false-or(<rect>) = #f,
-                                      anchor-pt: anchor :: false-or(<vec2>) = #f)
+                                      anchor-pt: anchor :: false-or(<vec2>) = #f,
+                                      align :: false-or(<alignment>) = #f)
  => (img :: <image>)
   add-ref(img-to-copy.image-source);
   // TODO: sub-rectangle here means a sub-rectangle of the (shared) source's
   //       texture, *not* a sub-rectangle of the copied image's sub-rectangle!
   //       Is this what we want?
-  make(<image-impl>,
-       source: img-to-copy.image-source,
-       sub-rectangle: sub-rectangle | shallow-copy(img-to-copy.image-sub-rectangle),
-       anchor-pt: anchor | img-to-copy.anchor-pt)
+  %create-image(img-to-copy.image-source,
+                sub-rectangle | shallow-copy(img-to-copy.image-sub-rectangle),
+                anchor | img-to-copy.anchor-pt,
+                align);
 end;
 
 // Create a new <image> from a <texture>.
@@ -70,15 +84,14 @@ end;
 // disposed.
 define method create-image-from (tex :: <texture>,
                                  #key sub-rectangle :: false-or(<rect>) = #f,
-                                      anchor-pt :: <vec2> = vec2(0, 0))
+                                      anchor-pt :: <vec2> = vec2(0, 0),
+                                      align :: false-or(<alignment>) = #f)
  => (img :: <image>)
   let source = make(<image-source>,
                   texture: tex,
                   auto-dispose-texture?: #f);
-  make(<image-impl>,
-       source: source,
-       sub-rectangle: sub-rectangle | tex.bounding-rect,
-       anchor-pt: anchor-pt)
+
+  %create-image(source, sub-rectangle | tex.bounding-rect, anchor-pt, align);
 end;
 
 // Creates a new <texture> from bmp and then creates a new <image>
@@ -87,14 +100,31 @@ end;
 // <image> referring to it is disposed.
 define method create-image-from (bmp :: <bitmap>,
                                  #key sub-rectangle :: false-or(<rect>) = #f,
-                                      anchor-pt :: <vec2> = vec2(0, 0))
+                                      anchor-pt :: <vec2> = vec2(0, 0),
+                                      align :: false-or(<alignment>) = #f)
  => (img :: <image>)
   let source = make(<image-source>,
                   texture: create-texture-from(bmp),
                   auto-dispose-texture?: #t);
+
+  %create-image(source, sub-rectangle | bmp.bounding-rect, anchor-pt, align);
+end;
+
+define function %create-image (source :: <image-source>,
+                               sub-rect :: <rect>,
+                               anchor-pt :: <vec2>,
+                               align :: false-or(<alignment>))
+ => (img :: <image-impl>)
+  if (align)
+    // derive anchor-pt from alignment (note that anchor-pt is relative to the
+    // sub-rect)
+    let (dx, dy) = alignment-offset(sub-rect, align);
+    anchor-pt := vec2(dx - sub-rect.left, dy - sub-rect.top);
+  end;
+
   make(<image-impl>,
        source: source,
-       sub-rectangle: sub-rectangle | bmp.bounding-rect,
+       sub-rectangle: sub-rect,
        anchor-pt: anchor-pt)
 end;
 

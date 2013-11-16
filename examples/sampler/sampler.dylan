@@ -406,7 +406,7 @@ define function create-images-page (app :: <sampler-app>) => (page :: <visual>)
   attach-behavior(page, make(<tween-group-behavior>));
 
   let img-1 = load-image("images/chick.png");
-  let img-2 = create-image-from(img-1, anchor-pt: img-1.bounding-rect.center);
+  let img-2 = create-image-from(img-1, align: $center);
 
   img-1.pos := vec2(200, 100);
   align-visual(img-2, $center, img-1, $center);
