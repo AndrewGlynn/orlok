@@ -275,177 +275,28 @@ define module key-ids
   use orlok-core;
 
   export
-     $key-unknown,
-     $key-first,
-     $key-backspace,
-     $key-tab,
-
-     $key-clear,
-     $key-return,
-     $key-pause,
-     $key-escape,
-
-     $key-space,
-     $key-exclaim,
-     $key-quotedbl,
-     $key-hash,
-
-     $key-dollar,
-     $key-ampersand,
-     $key-quote,
-     $key-leftparen,
-
-     $key-rightparen,
-     $key-asterisk,
-     $key-plus,
-     $key-comma,
-
-     $key-minus,
-     $key-period,
-     $key-slash,
-     $key-0,
-
-     $key-1,
-     $key-2,
-     $key-3,
-     $key-4,
-
-     $key-5,
-     $key-6,
-     $key-7,
-     $key-8,
-
-     $key-9,
-     $key-colon,
-     $key-semicolon,
-     $key-less,
-
-     $key-equals,
-     $key-greater,
-     $key-question,
-     $key-at,
-
-     $key-leftbracket,
-     $key-backslash,
-     $key-rightbracket,
-     $key-caret,
-
-     $key-underscore,
-     $key-backquote,
-     $key-a,
-     $key-b,
-
-     $key-c,
-     $key-d,
-     $key-e,
-     $key-f,
-
-     $key-g,
-     $key-h,
-     $key-i,
-     $key-j,
-
-     $key-k,
-     $key-l,
-     $key-m,
-     $key-n,
-
-     $key-o,
-     $key-p,
-     $key-q,
-     $key-r,
-
-     $key-s,
-     $key-t,
-     $key-u,
-     $key-v,
-
-     $key-w,
-     $key-x,
-     $key-y,
-     $key-z,
-
-     $key-delete,
-     $key-kp0,
-     $key-kp1,
-     $key-kp2,
-
-     $key-kp3,
-     $key-kp4,
-     $key-kp5,
-     $key-kp6,
-
-     $key-kp7,
-     $key-kp8,
-     $key-kp9,
-     $key-kp-period,
-
-     $key-kp-divide,
-     $key-kp-multiply,
-     $key-kp-minus,
-     $key-kp-plus,
-
-     $key-kp-enter,
-     $key-kp-equals,
-     $key-up,
-     $key-down,
-
-     $key-right,
-     $key-left,
-     $key-insert,
-     $key-home,
-
-     $key-end,
-     $key-pageup,
-     $key-pagedown,
-     $key-f1,
-
-     $key-f2,
-     $key-f3,
-     $key-f4,
-     $key-f5,
-
-     $key-f6,
-     $key-f7,
-     $key-f8,
-     $key-f9,
-
-     $key-f10,
-     $key-f11,
-     $key-f12,
-     $key-f13,
-
-     $key-f14,
-     $key-f15,
-     $key-numlock,
-     $key-capslock,
-
-     $key-scrollock,
-     $key-rshift,
-     $key-lshift,
-     $key-rctrl,
-
-     $key-lctrl,
-     $key-ralt,
-     $key-lalt,
-     $key-rmeta,
-
-     $key-lmeta,
-     $key-lsuper,
-     $key-rsuper,
-     $key-mode,
-
-     $key-compose,
-     $key-help,
-     $key-print,
-     $key-sysreq,
-
-     $key-break,
-     $key-menu,
-     $key-power,
-     $key-euro,
-
-     $key-undo;
+    $key-unknown, $key-first, $key-backspace, $key-tab, $key-clear, $key-return,
+    $key-pause, $key-escape, $key-space, $key-exclaim, $key-quotedbl, $key-hash,
+    $key-dollar, $key-ampersand, $key-quote, $key-leftparen, $key-rightparen,
+    $key-asterisk, $key-plus, $key-comma, $key-minus, $key-period, $key-slash,
+    $key-0, $key-1, $key-2, $key-3, $key-4, $key-5, $key-6, $key-7, $key-8,
+    $key-9, $key-colon, $key-semicolon, $key-less, $key-equals, $key-greater,
+    $key-question, $key-at, $key-leftbracket, $key-backslash,
+    $key-rightbracket, $key-caret, $key-underscore, $key-backquote,
+    $key-a, $key-b, $key-c, $key-d, $key-e, $key-f, $key-g, $key-h, $key-i,
+    $key-j, $key-k, $key-l, $key-m, $key-n, $key-o, $key-p, $key-q, $key-r,
+    $key-s, $key-t, $key-u, $key-v, $key-w, $key-x, $key-y, $key-z, $key-delete,
+    $key-kp0, $key-kp1, $key-kp2, $key-kp3, $key-kp4, $key-kp5, $key-kp6,
+    $key-kp7, $key-kp8, $key-kp9, $key-kp-period, $key-kp-divide,
+    $key-kp-multiply, $key-kp-minus, $key-kp-plus, $key-kp-enter,
+    $key-kp-equals, $key-up, $key-down, $key-right, $key-left, $key-insert,
+    $key-home, $key-end, $key-pageup, $key-pagedown, $key-f1, $key-f2, $key-f3,
+    $key-f4, $key-f5, $key-f6, $key-f7, $key-f8, $key-f9, $key-f10, $key-f11,
+    $key-f12, $key-f13, $key-f14, $key-f15, $key-numlock, $key-capslock,
+    $key-scrollock, $key-rshift, $key-lshift, $key-rctrl, $key-lctrl, $key-ralt,
+    $key-lalt, $key-rmeta, $key-lmeta, $key-lsuper, $key-rsuper, $key-mode,
+    $key-compose, $key-help, $key-print, $key-sysreq, $key-break, $key-menu,
+    $key-power, $key-euro, $key-undo;
 end module;
 
 define module orlok
