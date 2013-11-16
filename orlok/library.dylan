@@ -154,6 +154,8 @@ define module orlok-core
     dispose-on-shutdown,
     remove-from-dispose-on-shutdown,
 
+    with-disposable,
+
     // Resources
 
     <resource>,

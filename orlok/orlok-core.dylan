@@ -354,6 +354,33 @@ define function remove-from-dispose-on-shutdown (app :: <app>, disposable)
   remove-key!(app.dispose-on-shutdown-pool, disposable)
 end;
 
+// Declare and allocate one or more disposable objects within a scope, and
+// dispose them on exit.
+define macro with-disposable
+  {
+    with-disposable ()
+      ?:body
+    end
+  }
+    => { ?body }
+
+  {
+    with-disposable (?:variable = ?init:expression, ?more:*)
+      ?:body
+    end
+  }
+ =>
+  {
+    let ?variable = ?init;
+    block ()
+      with-disposable (?more)
+        ?body
+      end;
+    cleanup
+      dispose(?variable);
+    end
+  }
+end;
 
 //============================================================================
 //----------------  Resources  ----------------
