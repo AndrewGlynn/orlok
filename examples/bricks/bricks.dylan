@@ -99,14 +99,11 @@ define method on-event (e :: <startup-event>, app :: <bricks-app>) => ()
   app.sounds[#"respawn"] := load-sound("audio/respawn.mp3");
   app.sounds[#"win"] := load-sound("audio/win.mp3");
 
-  let ball-bmp = load-bitmap("images/ball.png");
-  let paddle-bmp = load-bitmap("images/paddle.png");
-
-  app.textures[#"ball"] := create-texture-from(ball-bmp);
-  app.textures[#"paddle"] := create-texture-from(paddle-bmp);
-
-  dispose(ball-bmp);
-  dispose(paddle-bmp);
+  with-disposable (ball-bmp = load-bitmap("images/ball.png"),
+                   paddle-bmp = load-bitmap("images/paddle.png"))
+    app.textures[#"ball"] := create-texture-from(ball-bmp);
+    app.textures[#"paddle"] := create-texture-from(paddle-bmp);
+  end;
 
   register-font(app, #"small", load-font("fonts/Orbitron Medium.otf", 9));
   register-font(app, #"medium", load-font("fonts/Orbitron Medium.otf", 24));
@@ -229,18 +226,18 @@ define function render-level (app :: <bricks-app>, ren :: <renderer>) => ()
   // walls
   draw-rect(ren,
             make(<rect>,
-            left: 0, right: $left-edge,
-            top: 0, bottom: $world-height),
+                 left: 0, right: $left-edge,
+                 top: 0, bottom: $world-height),
             color: $wall-color);
   draw-rect(ren,
             make(<rect>,
-            left: $right-edge, right: $world-width,
-            top: 0, bottom: $world-height),
+                 left: $right-edge, right: $world-width,
+                 top: 0, bottom: $world-height),
             color: $wall-color);
   draw-rect(ren,
             make(<rect>,
-            left: $left-edge, right: $right-edge,
-            top: 0, bottom: $top-edge),
+                 left: $left-edge, right: $right-edge,
+                 top: 0, bottom: $top-edge),
             color: $wall-color);
 
   // bright border on walls
@@ -621,6 +618,14 @@ define function fade-in (v :: <visual>,
   tween-to (duration, group: tween-group) v.alpha => 1.0 end;
 end;
 
+define function fade-out (v :: <visual>,
+                          duration :: <single-float>,
+                          tween-group) => ()
+  sequentially (group: tween-group)
+    tween-to (duration) v.alpha => 0.0 end;
+    action v.visible? := #f; end;
+  end;
+end;
 
 define function make-button (txt :: <string>,
                             x :: <real>,
@@ -644,16 +649,6 @@ define function make-button (txt :: <string>,
   let down = make-state(1, 1, $white);
   attach-button-behavior(btn, up, over, down);
   btn
-end;
-
-
-define function fade-out (v :: <visual>,
-                          duration :: <single-float>,
-                          tween-group) => ()
-  sequentially (group: tween-group)
-    tween-to (duration) v.alpha => 0.0 end;
-    action v.visible? := #f; end;
-  end;
 end;
 
 //----------------------------------------------------------------------------
