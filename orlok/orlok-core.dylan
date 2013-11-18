@@ -57,6 +57,7 @@ define abstract class <app-config> (<object>)
   keyword force-app-aspect-ratio?: = #f;
   keyword full-screen?: = #f;
   keyword frames-per-second: = 60;
+  keyword antialias?: = #f;
 end;
 
 // Physical/device dimensions.

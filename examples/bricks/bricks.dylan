@@ -69,9 +69,9 @@ define class <bricks-app> (<visual-app>)
   slot lives   :: <integer> = $initial-lives;
 
   // effects
-  slot tween-group :: <tween-group> = make(<tween-group>);
-  slot sounds :: <table> = make(<table>);
-  slot textures :: <table> = make(<table>);
+  constant slot tween-group :: <tween-group> = make(<tween-group>);
+  constant slot sounds :: <table> = make(<table>);
+  constant slot textures :: <table> = make(<table>);
   slot glow-effect :: <full-screen-glow-effect>;
 
   // UI
@@ -659,9 +659,10 @@ define function main (name, arguments)
   let cfg = make(<app-config>,
                  window-width: $world-width,
                  window-height: $world-height,
-                 full-screen?: #f,
+                 full-screen?: #t,
                  force-app-aspect-ratio?: #t,
-                 frames-per-second: 60);
+                 frames-per-second: 60,
+                 antialias?: #f);
   let app = make(<bricks-app>, config: cfg);
 
   run-app(app);

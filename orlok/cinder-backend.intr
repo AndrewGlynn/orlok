@@ -44,6 +44,8 @@ define class <app-config-impl> (<app-config>)
     init-keyword: full-screen?:;
   constant slot frames-per-second :: <integer> = 60,
     init-keyword: frames-per-second:;
+  constant slot antialias? :: <boolean> = #f,
+    init-keyword: antialias?:;
 end;
 
 define sealed method make (type == <app-config>,
@@ -85,7 +87,8 @@ define sealed method run-app (app :: <app>) => ()
              app.config.app-height,
              app.config.force-app-aspect-ratio?,
              app.config.full-screen?,
-             app.config.frames-per-second);
+             app.config.frames-per-second,
+             app.config.antialias?);
 end;
 
 define sealed method quit-app (app :: <app>) => ()
@@ -1103,6 +1106,20 @@ define method clear (ren :: <cinder-gl-renderer>,
                      color :: <color>) => ()
   // note: not clearing depth buffer
   cinder-gl-clear(color.red, color.green, color.blue, color.alpha, #f);
+
+  // TODO: A bug in the 0.8.4 cinder (?) with my graphics card causes glClear
+  // to do nothing when MSAA is disabled. I'm adding this in as a workaround
+  // until I update the cinder version or find another fix.
+  if (~*app*.config.antialias?)
+    with-saved-state (ren.transform-2d, ren.viewport)
+      ren.viewport := make(<rect>,
+                           left: 0, top: 0,
+                           width: *app*.config.window-width,
+                           height: *app*.config.window-height);
+      ren.transform-2d := make(<affine-transform-2d>);
+      draw-rect (ren, the-app().bounding-rect, color: color);
+    end;
+  end;
 end;
 
 define function update-renderer-transform (ren :: <cinder-gl-renderer>) => ()

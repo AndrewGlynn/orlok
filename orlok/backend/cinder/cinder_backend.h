@@ -20,7 +20,8 @@ void cinder_run(int width, int height,
                 int appWidth, int appHeight,
                 BOOL forceAppAspectRatio,
                 BOOL fullscreen,
-                int frames_per_second);
+                int frames_per_second,
+                BOOL antialiasing);
 void cinder_quit();
 /* TODO: remove? void cinder_set_app_size(int width, int height, BOOL forceAspectRatio); */
 void cinder_set_full_screen(BOOL fullscreen);

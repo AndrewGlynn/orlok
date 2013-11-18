@@ -77,7 +77,8 @@ static CinderBackendApp* cinder_app = 0;
 void cinder_run(int width, int height,
                 int appWidth, int appHeight,
                 int forceAppAspectRatio,
-                int fullscreen, int frames_per_second)
+                int fullscreen, int frames_per_second,
+                int antialiasing)
 {
     cinder_w = width;
     cinder_h = height;
@@ -93,7 +94,9 @@ void cinder_run(int width, int height,
     cinder::app::AppBasic::prepareLaunch();
     cinder_app = new CinderBackendApp;
 
-    cinder::app::Renderer* ren = new RendererGl;
+    // If user specifies antialiasing, use default value, otherwise none.
+    cinder::app::Renderer* ren = antialiasing ? new RendererGl
+                                              : new RendererGl(0);
     cinder::app::AppBasic::executeLaunch(cinder_app, ren, "", argc, argv);
     cinder::app::AppBasic::cleanupLaunch();
 }
