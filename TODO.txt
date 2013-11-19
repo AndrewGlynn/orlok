@@ -5,6 +5,11 @@
   Note that <visual> _is_ declared open in orlok, and is exported.
   Attempts to come up with a minimal repro case for this have failed so far.
 
+- Similar issue to above. We seem unable to properly create methods on "pos"
+  outside of the orlok library, even if it is declared open. Compiling
+  works fine, but at runtime we get a "no applicable method" error, even
+  when the slot "pos" is defined on the relevant class.
+
 - Clean up cinder_backend.cpp. Make more consistent. Right now some things
   are methods of the App class, others are just C functions. Make everything
   a C function, and make members of the App public as necessary to support
