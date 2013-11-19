@@ -439,7 +439,13 @@ void cinder_gl_update_transform(float sx, float shy, float shx, float sy, float 
           0.0f, 0.0f, 1.0f, 0.0f,
           0.0f, 0.0f, 0.0f, 1.0f, true);
 
+    // toss out last value
+    gl::popModelView();
+
+    // apply new
+    gl::pushModelView();
     gl::multModelView(m);
+
 }
 
 
@@ -1007,6 +1013,7 @@ void CinderBackendApp::setup()
     m_fontContext = cairo::Context(surf);
 
     gl::enableAlphaBlending();
+    gl::pushModelView();
 
     cinder_startup();
 }

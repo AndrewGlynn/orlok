@@ -856,6 +856,8 @@ define class <cinder-gl-renderer> (<renderer>)
                                            width: 0, height: 0);
   slot %blend-mode        :: <blend-mode> = $blend-normal;
   slot %render-color      :: <color> = $white;
+
+  slot %transform-dirty?  :: <boolean> = #t;
 end;
 
 define function begin-draw (app :: <app>, ren :: <cinder-gl-renderer>) => ()
@@ -994,6 +996,7 @@ end;
 define method transform-2d-setter (trans :: <affine-transform-2d>,
                                    ren :: <cinder-gl-renderer>)
  => (trans :: <affine-transform-2d>)
+  ren.%transform-dirty? := #t;
   ren.%transform-2d := shallow-copy(trans);
 end;
 
@@ -1068,6 +1071,7 @@ end;
 define sealed method translate! (ren :: <cinder-gl-renderer>,
                                  t :: <vec2>)
  => (ren :: <cinder-gl-renderer>)
+  ren.%transform-dirty? := #t;
   translate!(ren.%transform-2d, t);
   ren
 end;
@@ -1075,6 +1079,7 @@ end;
 define sealed method rotate! (ren :: <cinder-gl-renderer>,
                               r :: <single-float>)
  => (ren :: <cinder-gl-renderer>)
+  ren.%transform-dirty? := #t;
   rotate!(ren.%transform-2d, r);
   ren
 end;
@@ -1082,6 +1087,7 @@ end;
 define sealed method scale! (ren :: <cinder-gl-renderer>,
                              s :: <single-float>)
  => (ren :: <cinder-gl-renderer>)
+  ren.%transform-dirty? := #t;
   scale!(ren.%transform-2d, s);
   ren
 end;
@@ -1106,11 +1112,13 @@ define method clear (ren :: <cinder-gl-renderer>,
   end;
 end;
 
-define function update-renderer-transform (ren :: <cinder-gl-renderer>) => ()
-  // TODO: Optimize: Only call out to cinder if transform has actually changed?
-  // Profile to make sure it matters!
-  let (sx, shy, shx, sy, tx, ty) = transform-components(ren.transform-2d);
-  cinder-gl-update-transform(sx, shy, shx, sy, tx, ty);
+define inline function update-renderer-transform (ren :: <cinder-gl-renderer>)
+ => ()
+  if (ren.%transform-dirty?)
+    let (sx, shy, shx, sy, tx, ty) = transform-components(ren.transform-2d);
+    cinder-gl-update-transform(sx, shy, shx, sy, tx, ty);
+    ren.%transform-dirty? := #f;
+  end;
 end;
 
 define method draw-rect (ren :: <cinder-gl-renderer>,
@@ -1172,11 +1180,9 @@ define method draw-rect (ren :: <cinder-gl-renderer>,
       end;
     end;
 
-    cinder-gl-push-modelview-matrix();
     update-renderer-transform(ren);
     cinder-gl-draw-rect(rect.left, rect.top, rect.right, rect.bottom,
                         u1, v1, u2, v2);
-    cinder-gl-pop-modelview-matrix();
   end with-saved-state;
 end;
 
@@ -1224,11 +1230,9 @@ define method draw-text (ren :: <cinder-gl-renderer>,
       ren.shader := sh;
     end;
 
-    cinder-gl-push-modelview-matrix();
     update-renderer-transform(ren);
     cinder-gl-draw-text(text, color.red, color.green, color.blue, color.alpha,
                         v.vx, v.vy, font.font-ptr);
-    cinder-gl-pop-modelview-matrix();
   end;
 end;
 
@@ -1237,13 +1241,11 @@ define method draw-line (ren :: <cinder-gl-renderer>,
                          to :: <vec2>,
                          color :: <color>,
                          width :: <single-float>) => ()
-  cinder-gl-push-modelview-matrix();
   update-renderer-transform(ren);
   let saved-color = ren.render-color;
   ren.render-color := color;
   cinder-gl-draw-line(from.vx, from.vy, to.vx, to.vy, width);
   ren.render-color := saved-color;
-  cinder-gl-pop-modelview-matrix();
 end;
 
 
