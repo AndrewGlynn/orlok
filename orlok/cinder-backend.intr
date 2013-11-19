@@ -193,22 +193,8 @@ define constant $frag-alpha-color-shader =
   "    gl_FragColor.a = texture2D(tex0, gl_TexCoord[0].st).a * color.a; "
   "}                                                                    ";
 
-// Draw solid color, ignoring texture.
-define constant $frag-solid-color-shader =
-  "#version 110\n"
-  "uniform sampler2D tex0;                                      "
-  "uniform vec4 color;                                          "
-  "void main()                                                  "
-  "{                                                            "
-  "    gl_FragColor = color;                                    "
-  "}                                                            ";
-
-
 // Shader used for colorizing texture.
 define variable *alpha-color-shader* = #f;
-
-// Shader used for drawing using a single color.
-define variable *solid-color-shader* = #f; 
 
 //============================================================================
 // Dylan functions called from C
@@ -221,8 +207,6 @@ define function cinder-startup () => ()
 
   *alpha-color-shader* := create-shader($vert-pass-thru-shader,
                                         $frag-alpha-color-shader);
-  *solid-color-shader* := create-shader($vert-pass-thru-shader,
-                                        $frag-solid-color-shader);
 
   let e = make(<startup-event>);
   on-event(e, *app*);
@@ -1137,7 +1121,7 @@ define method draw-rect (ren :: <cinder-gl-renderer>,
                               texture-rect: tex-rect :: false-or(<rect>) = #f,
                               shader: sh :: false-or(<shader>) = #f,
                               color :: false-or(<color>) = #f) => ()
-  with-saved-state (ren.texture, ren.shader, ren.transform-2d)
+  with-saved-state (ren.texture, ren.shader, ren.transform-2d, ren.render-color)
     let v = at.xy;
     if (align)
       let (dx, dy) = alignment-offset(rect, align);
@@ -1157,10 +1141,9 @@ define method draw-rect (ren :: <cinder-gl-renderer>,
       set-uniform(ren.shader, "tex0", 0); // assumes only one texture unit
       set-uniform(ren.shader, "color", color * ren.render-color);
     elseif (color)
+      ren.shader := #f;
       ren.texture := #f;
-      ren.shader := *solid-color-shader*;
-      set-uniform(ren.shader, "tex0", 0); // assumes only one texture unit
-      set-uniform(ren.shader, "color", color * ren.render-color);
+      ren.render-color := color * ren.render-color;
     else
       if (tex)
         ren.texture := tex;
