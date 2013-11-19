@@ -61,6 +61,7 @@ define method on-event (e :: <startup-event>, app :: <sampler-app>) => ()
   add-page(app, #"alignment", create-alignment-page(app));
   add-page(app, #"shaders", create-shaders-page(app));
   add-page(app, #"audio", create-audio-page(app));
+  add-page(app, #"cloth", create-cloth-page(app));
   // TODO: create other pages
 
   activate-page(app, #"title");
@@ -236,6 +237,7 @@ define function create-title-page (app :: <sampler-app>) => (page :: <visual>)
   let btn-align   = add-button(page, "Alignment", 10, 250);
   let btn-shaders = add-button(page, "Shaders", 10, 300);
   let btn-audio   = add-button(page, "Audio", 10, 350);
+  let btn-cloth   = add-button(page, "Cloth", 10, 400);
   let btn-quit    = add-button(page, "Quit", 10, 500);
 
   listen-for (btn-tweens, e :: <button-click-event>)
@@ -260,6 +262,10 @@ define function create-title-page (app :: <sampler-app>) => (page :: <visual>)
 
   listen-for (btn-audio, e :: <button-click-event>)
     activate-page(app, #"audio");
+  end;
+
+  listen-for (btn-cloth, e :: <button-click-event>)
+    activate-page(app, #"cloth");
   end;
 
   listen-for (btn-quit, e :: <button-click-event>)
@@ -634,6 +640,81 @@ define function create-audio-page (app :: <sampler-app>) => (page :: <visual>)
   listen-for (btn-back, e :: <button-click-event>)
     activate-page(app, #"title");
   end;
+
+  page
+end;
+
+define function create-cloth-page (app :: <sampler-app>) => (page :: <visual>)
+  let page = make(<group-visual>);
+  let btn-back = add-button(page, "back", 10, 10);
+
+  listen-for (btn-back, e :: <button-click-event>)
+    activate-page(app, #"title");
+  end;
+
+  // add an invisible box just to make sure this page's bounds are large enough
+  // that we get mouse events (used below)
+  add-child(page, make(<box>,
+                       rect: app.bounding-rect,
+                       color: $black,
+                       visible?: #f));
+
+  add-child(page,
+            make(<text-field>,
+                 text: "Left-click to grab and drag. Right-click and drag to cut.",
+                 color: hex-color(#xcccccc),
+                 font: app.fonts[#"droid-sans-14"],
+                 pos: vec2(app.bounding-rect.center-x, 20),
+                 align: $center));
+
+  let sys = cloth(30, 30);
+
+  listen-for (page, e :: <update-event>)
+    update-system(sys, e.delta-time);
+  end;
+
+  listen-for (page, e :: <render-event>)
+    render-cloth(e.renderer, sys);
+  end;
+
+  // support grabbing and dragging particles via a <pin-constraint>
+  let drag-pin :: false-or(<pin-constraint>) = #f;
+
+  listen-for (page, e :: <mouse-left-button-down-event>)
+    let p = grab-nearby-particle(sys, e.mouse-vector);
+    if (p)
+      drag-pin := add-constraint(sys, make(<pin-constraint>,
+                                           particle: p,
+                                           pin-loc: e.mouse-vector));
+    end;
+  end;
+  listen-for (page, e :: <mouse-left-button-up-event>)
+    if (drag-pin)
+      remove-constraint(sys, drag-pin);
+      drag-pin := #f;
+    end;
+  end;
+  listen-for (page, e :: <mouse-move-event>)
+    if (drag-pin)
+      drag-pin.pin-loc.xy := e.mouse-vector;
+    end;
+  end;
+
+  // support cutting the fabric by removing constraints
+  listen-for (page, e :: <mouse-move-event>)
+    if (e.mouse-right-button?)
+      let p = grab-nearby-particle(sys, e.mouse-vector);
+      if (p)
+        for (c in sys.constraints)
+          if (instance?(c, <stick-constraint>) &
+              (c.particle-a == p | c.particle-b == p))
+            remove-constraint(sys, c);
+          end;
+        end;
+      end;
+    end;
+  end;
+
 
   page
 end;
