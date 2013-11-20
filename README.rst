@@ -12,27 +12,24 @@ Orlok is buggy. Orlok is inefficient. Orlok only works on Mac OS X
 Setup
 -----
 
-You'll need to download version 0.8.4 of libcinder from:
+You'll need to download version 0.8.4 of libcinder from http://libcinder.org/releases/cinder_0.8.4_mac.zip.
+Note that this is *not* the latest release version.
 
-  http://libcinder.org/releases/cinder_0.8.4_mac.zip
-
-(Note that this is *not* the latest release version.)
-
-Extract into orlok/backend/cinder (this should create a cinder_0.8.4_mac
-directory under orlok/backend/cinder).
+Extract into ``orlok/backend/cinder`` (this should create a ``cinder_0.8.4_mac``
+directory under ``orlok/backend/cinder``).
 
 Building
 --------
 You should just be able to run 'make' from the top-level orlok directory.
 
-Note that the orlok_cinder_backend library compiles for me with llvm-g++ 4.2.
+Note that the ``orlok_cinder_backend`` library compiles for me with llvm-g++ 4.2.
 Hopefully it works ok with other compilers, too.
 
 Running the Examples
 --------------------
-To run the simple-app example, just run:
+To run the simple-app example, just run::
 
-    ``open examples/simple-app/simple-app.app``
+    open examples/simple-app/simple-app.app
 
 (Or double-click that file from a Finder window.)
 
